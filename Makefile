@@ -5,7 +5,7 @@ RST			= \033[0m
 END			= \e[0m
 
 CC					=	c++
-CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98
+CC_FLAGS			=	-Wall -Werror -Wextra -g3 -fsanitize=address -std=c++98
 NAME				=	Container
 OBJS_DIR			=	objs
 VECTOR_DIR			=	vector/

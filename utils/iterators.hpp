@@ -24,9 +24,11 @@ namespace ft
 		public:
 			// Constructors / destructor , can be expanded (param = iterator?)
 
-			random_access_iterator() : _ptr( nullptr )
+			random_access_iterator() : _ptr( NULL )
 			{}
 			random_access_iterator( const value_type* ptr) : _ptr(ptr)
+			{}
+			random_access_iterator( value_type* ptr) : _ptr(ptr)
 			{}
 			~random_access_iterator()
 			{}
@@ -34,14 +36,14 @@ namespace ft
 			random_access_iterator(const iterator_traits<random_access_iterator<value_type> >& cpy) : _ptr(cpy._ptr)
 			{}
 			random_access_iterator& operator=(const random_access_iterator cpy)
-				{	this->_ptr = cpy._ptr;	}
+				{	this->_ptr = cpy._ptr;	return (*this);}
 
 			// Comparisons
 
 			bool					operator==( const random_access_iterator b ) const 
 				{	return(this->base() == b.base());	}
 			bool					operator!=( const random_access_iterator b ) const 
-				{	return(this->base()!= b.base());	}
+				{	return(this->base() != b.base());	}
 			bool					operator<( const random_access_iterator b ) const 
 				{	return(this->base() < b.base());	}
 			bool					operator<=( const random_access_iterator b ) const 
@@ -78,9 +80,9 @@ namespace ft
 			}
 
 			random_access_iterator& operator+=(	difference_type n )
-				{	_ptr += n;	return(*_ptr);	}
+				{	_ptr += n;	return(*this);	}
 			random_access_iterator& operator-=(	difference_type n )
-				{	_ptr -= n;	return(*_ptr);	}
+				{	_ptr -= n;	return(*this);	}
 
 			//	ADD MINUS temp values
 			random_access_iterator	operator+( difference_type n ) const
@@ -97,7 +99,7 @@ namespace ft
 			}
 			// difference_type			operator+( const random_access_iterator b ) const 
 			difference_type			operator-( const random_access_iterator b ) const 
-				{	return((difference_type) this->base() - b.base());	}
+				{	return( this->base() - b.base());	}
 
 			// Safegetter
 			value_type*	base( void ) const 
