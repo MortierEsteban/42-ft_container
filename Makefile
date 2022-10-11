@@ -5,7 +5,7 @@ RST			= \033[0m
 END			= \e[0m
 
 CC					=	c++
-CC_FLAGS			=	-Wall -Werror -Wextra -g3 -fsanitize=address -std=c++98
+CC_FLAGS			=	-Wall -Werror -Wextra -g3 -fsanitize=address -std=c++11
 NAME				=	Container
 OBJS_DIR			=	objs
 VECTOR_DIR			=	vector/
@@ -38,6 +38,9 @@ fclean: clean
 	@printf "\033[2K\r${GRN}[FCLEAN]${RST} done$(END)"
 
 re: fclean all
+
+test: re 
+	./$(NAME)
 
 .PHONY:	all clean fclean re
 

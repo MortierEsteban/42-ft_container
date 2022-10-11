@@ -3,6 +3,7 @@
 
 #include "../utils/iterator_base.hpp"
 #include "../utils/iterators.hpp"
+#include "../utils/types.hpp"
 #include <memory>
 
 namespace ft
@@ -35,23 +36,28 @@ namespace ft
 		public:
 			explicit	vector(const allocator_type& alloc = allocator_type()): _size(0), _capacity(0), storage(NULL), _alloc(alloc)
 			{}
-			explicit 	vector(size_t n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _size(n), _capacity(0), storage(NULL),_alloc(alloc)
+
+			explicit 	vector(typename ft::enable_if<ft::is_integral<size_type>::value, size_type>::type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):_size(0), _capacity(n), storage(NULL),_alloc(alloc)
 			{
-				reserve( _size * 2);
+				if (_capacity == 0)
+					throw(std::out_of_range("vector_M_range"));
+				std::cout << " FILL allocating : " << _capacity  * 2 << std::endl;
+				reserve(_capacity * 2);
+				_size = n;
 				for(size_type i = 0; i < _size; i++)
 					_alloc.construct(&storage[i], val);
 			}
+
 			template<class InputIterator>
-			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()):_size(last - first), _capacity(0), _alloc(alloc)
+			vector(typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()):_size(0), _capacity(last - first), _alloc(alloc)
 			{
-				reserve( size  * 2 );
-				for(size_type i = 0; first < last; first++)
-					_alloc.construct(&storage[i++], *first);
+				reserve( _capacity * 2 );
+				insert(begin(), first, last);
 			}
 
 			vector(const	vector& x):  _size(x._size), storage(NULL), _alloc(x._alloc)
 			{
-				reserve( size * 2 );
+				reserve( _size * 2 );
 				for(size_type i = 0; i < _size; i++)
 				{
 					_alloc.construct(&storage[i], x.storage[i]);
@@ -107,7 +113,8 @@ namespace ft
 						}
 						new_stor[tmp] = storage[tmp];
 					}
-					_alloc.deallocate(storage, _capacity);
+					if (storage)
+						_alloc.deallocate(storage, _capacity);
 					storage = new_stor;
 					_capacity = new_cap;
 				}
@@ -143,10 +150,20 @@ namespace ft
 			const value_type*	data() const
 				{	return(const_cast<value_type *>(storage));	}
 
-			//Modifiers
-			void assign (size_type n, const value_type& val);
+			void assign (size_type n, const value_type& val)
+			{
+				clear();
+				if (n >= _capacity)
+					reserve(_capacity + n + 1 );
+				_size = n;
+				for(size_type i = 0; i < _size; i++)
+					_alloc.construct(&storage[n], val);
+			}
 			template <class InputIterator> 
 			void assign (InputIterator first, InputIterator last);
+			// {
+
+			// }
 			
 			void push_back (const value_type& val)
 			{
@@ -157,17 +174,45 @@ namespace ft
 			}
 			void pop_back()
 			{
-				if (size == 0)
+				if (_size == 0)
 					return ;
 				_alloc.destroy(storage[_size]);
 				_size--;
 			}
-			iterator insert (iterator position, const value_type& val);
-			void insert (iterator position, size_type n, const value_type& val);
-			template <class InputIterator>    
-			void insert (iterator position, InputIterator first, InputIterator last)
+			iterator insert (iterator position, const value_type& val)
 			{
-				
+				return (insert(position, 1, val));
+			}
+			iterator insert (iterator position, size_type n, const value_type& val)
+			{
+				size_type tmp = position - begin();
+				if (_size + n >= _capacity)
+					reserve ((_capacity + n + 1));
+				shift_right( tmp ,n);
+				size_type stop = tmp + n;
+				for(; tmp != stop; tmp++)
+				{
+					_alloc.construct(&storage[tmp], val);
+				}
+				_size += n;
+				return(iterator(&storage[stop - n]));
+			}
+			template <class InputIterator>    
+			iterator insert (iterator position, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last)
+			{
+				size_type dist = last - first;
+				size_type pos = position - begin();
+				if (_size + dist >= _capacity)
+					reserve ((_capacity + dist + 1));
+				size_type last_pos = pos + dist;
+				shift_right(pos, dist);
+				while(pos != last_pos)
+				{
+					_alloc.construct(&storage[pos++], *first);
+					first++;
+					_size++;
+				}
+				return (begin());
 			}
 
 			iterator erase (iterator position)
@@ -194,7 +239,11 @@ namespace ft
 				return(iterator(&storage[pos]));
 			}
 
-			void swap (vector& x);
+			void swap (vector& x)
+			{
+				std::swap(storage, x.storage);
+			}
+
 			void clear()
 			{	erase((begin(),end()));	}
 
@@ -208,11 +257,41 @@ namespace ft
 					if (new_cap > max_size())
 						throw (std::length_error("vector error length"));
 				}
+
+				void shift_right(size_type pos, size_type len)
+				{
+					if (!storage || !_size)
+						return;
+					size_type new_end = _size + len - 1;
+					size_type _end = _size - 1;
+					while (_end >= pos && _end != 0)
+					{
+						storage[new_end--] = storage[_end--];
+					}
+					if (_end == 0 && pos == 0)
+						storage[new_end--] = storage[_end];
+				}
 	};
 
 
-	template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	template <class T, class Alloc>  bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{
+			if (lhs.size() == rhs.size())
+			{
+				typename ft::vector<T>::iterator itl = lhs.begin();
+				typename ft::vector<T>::iterator itr = rhs.begin();
+				while(itl != lhs.end())
+				{
+					if (*itl != *itr)
+						return(false);
+					itr++;itl++;
+				}
+				return(true);
+			}
+			return(false);
+		}
+	template <class T, class Alloc>  bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+		{return (!(rhs == lhs));}
 	template <class T, class Alloc>  bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 	template <class T, class Alloc>  bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 	template <class T, class Alloc>  bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);

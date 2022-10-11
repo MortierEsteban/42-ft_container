@@ -26,8 +26,8 @@ namespace ft
 
 			random_access_iterator() : _ptr( NULL )
 			{}
-			random_access_iterator( const value_type* ptr) : _ptr(ptr)
-			{}
+			// random_access_iterator( const value_type* ptr) : _ptr(ptr)
+			// {}
 			random_access_iterator( value_type* ptr) : _ptr(ptr)
 			{}
 			~random_access_iterator()
@@ -63,9 +63,9 @@ namespace ft
 
 			// Iterator modification
 			random_access_iterator& operator++( void )
-			{	return(_ptr + 1);	}
+			{	return(_ptr++);	}
 			random_access_iterator& operator--( void )
-			{	return(_ptr - 1);	}
+			{	return(_ptr--);	}
 			random_access_iterator operator++( int )
 			{
 				random_access_iterator<value_type> tmp(_ptr);
