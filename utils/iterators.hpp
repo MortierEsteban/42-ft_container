@@ -43,8 +43,8 @@ namespace ft
 
 			bool					operator==( const random_access_iterator b ) const 
 				{	return(this->base() == b.base());	}
-			bool					operator!=( const random_access_iterator b ) const 
-				{	return(this->base() != b.base());	}
+			bool         	operator!=(const random_access_iterator& lhs, const random_access_iterator& rhs) 
+				{ return !(lhs.base() == rhs.base()); }
 			bool					operator<( const random_access_iterator b ) const 
 				{	return(this->base() < b.base());	}
 			bool					operator<=( const random_access_iterator b ) const 
@@ -107,13 +107,6 @@ namespace ft
 				{	return(this->_ptr);	}
 	};
 
-	// template <class InputIterator, class Distance>  
-	// void advance (iterator_trait<InputIterator>& it, Distance n)
-	// {
-	// 	int sign = 1;
-	// 	if (n < 0 && it.iterator_category == random_access_iterator_tag)
-	// 		sign = -1;
-	// }
 
 
 }

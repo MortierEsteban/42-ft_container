@@ -36,7 +36,7 @@ namespace ft
 		public:
 			explicit	vector(const allocator_type& alloc =allocator_type()): _size(0), _capacity(0), storage(NULL), _alloc(alloc)
 			{}
-
+		
 			explicit 	vector(typename ft::enable_if<ft::is_integral<size_type>::value, size_type>::type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):_size(0), _capacity(n), storage(NULL),_alloc(alloc)
 			{
 				if (_capacity == 0)
@@ -50,16 +50,22 @@ namespace ft
 			template<class InputIterator>
 			vector(typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()):_size(0), _capacity(last - first), storage(NULL),_alloc(alloc)
 			{
-				reserve( _capacity * 2 );
+				reserve( (_capacity + 1) * 2 );
 				insert(this->begin(), first, last);
 			}
 
-			vector(const	vector& x):  _size(0),_capacity(0), storage(NULL), _alloc(x._alloc)
+			vector(const	vector& x):  _size(0),_capacity(x._capacity), storage(NULL), _alloc(x._alloc)
 			{
-				reserve( x.capacity());
+				reserve( _capacity * 2);
 				insert(this->begin(),x.begin(), x.end());
-				_size = x._size;
+
 			}
+			vector& operator= (const vector& x)
+			{
+				assign(x.begin(),x.end());
+				return(*this);
+			}
+
 
 			~vector()
 			{
@@ -75,9 +81,9 @@ namespace ft
 			const_iterator begin() const
 				{	return(const_iterator(storage));	}
 			iterator end()
-				{	return(iterator(storage + _size ));	}
+				{	return(iterator(storage + _size));	}
 			const_iterator end() const
-				{	return(const_iterator(storage + _size ));	}
+				{	return(const_iterator(storage + _size));	}
 			
 			//Reverse iterators
 			reverse_iterator rbegin()
@@ -163,16 +169,18 @@ namespace ft
 			void assign (size_type n, const value_type& val)
 			{
 				clear();
-				if (n >= _capacity)
+				if (n >= _capacity || !storage)
 					reserve(_capacity + n + 1 );
 				_size = n;
 				for(size_type i = 0; i < _size; i++)
 					_alloc.construct(&storage[n], val);
 			}
+			
 			template <class InputIterator> 
 			void assign (typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last)
 			{
-				insert(begin(),first,last);
+				clear();
+				insert(begin(), first, last);
 			}
 			
 			void push_back (const value_type& val)
@@ -186,7 +194,7 @@ namespace ft
 			{
 				if (_size == 0)
 					return ;
-				_alloc.destroy(storage[_size]);
+				_alloc.destroy(&storage[_size]);
 				_size--;
 			}
 			iterator insert (iterator position, const value_type& val)
@@ -256,7 +264,7 @@ namespace ft
 			}
 
 			void clear()
-			{	erase((begin(),end()));	}
+				{	erase(begin(),end());	}
 
 			//Allocator
 			allocator_type get_allocator() const

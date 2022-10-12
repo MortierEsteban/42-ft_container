@@ -4,7 +4,43 @@
 #include <list>
 #define TESTED_NAMESPACE ft
 #define T_SIZE_TYPE size_t
-#define TESTED_TYPE int
+#define TESTED_TYPE foo<int>
+
+template <typename T>
+class foo {
+    public:
+        typedef T    value_type;
+
+        foo(void) : value(), _verbose(false) { };
+        foo(value_type src, const bool verbose = false) : value(src), _verbose(verbose) { };
+        foo(foo const &src, const bool verbose = false) : value(src.value), _verbose(verbose) { };
+        ~foo(void) { if (this->_verbose) std::cout << "~foo::foo()" << std::endl; };
+        void m(void) { std::cout << "foo::m called [" << this->value << "]" << std::endl; };
+        void m(void) const { std::cout << "foo::m const called [" << this->value << "]" << std::endl; };
+        foo &operator=(value_type src) { this->value = src; return *this; };
+        foo &operator=(foo const &src) {
+            if (this->_verbose || src._verbose)
+                std::cout << "foo::operator=(foo) CALLED" << std::endl;
+            this->value = src.value;
+            return *this;
+        };
+        value_type    getValue(void) const { return this->value; };
+        void        switchVerbose(void) { this->_verbose = !(this->_verbose); };
+
+        operator value_type(void) const {
+            return value_type(this->value);
+        }
+    private:
+        value_type    value;
+        bool        _verbose;
+};
+
+template <typename T>
+std::ostream    &operator<<(std::ostream &o, foo<T> const &bar) {
+    o << bar.getValue();
+    return o;
+}
+// #define TESTED_TYPE int
 void print(int id, ft::vector<int>& container)
 {
     std::cout << id << ". ";
@@ -36,39 +72,45 @@ void	printSize(TESTED_NAMESPACE::vector<T> const &vct, bool print_content = true
 }
 
 
-int main()
+int		main(void)
 {
-  TESTED_NAMESPACE::vector<TESTED_TYPE> vct(5);
-	TESTED_NAMESPACE::vector<TESTED_TYPE>::iterator it = vct.begin(), ite = vct.end();
+	const int size = 5;
+	TESTED_NAMESPACE::vector<TESTED_TYPE> vct(size);
+	TESTED_NAMESPACE::vector<TESTED_TYPE>::iterator it(vct.begin());
+	TESTED_NAMESPACE::vector<TESTED_TYPE>::const_iterator ite(vct.end());
 
-	std::cout << "len: " << (ite - it) << std::endl;
-	for (; it != ite; ++it)
-		*it = (ite - it);
-
-	it = vct.begin();
-	TESTED_NAMESPACE::vector<TESTED_TYPE> vct_range(it, --(--ite));
-	for (int i = 0; it != ite; ++it)
-		*it = ++i * 5;
+	for (int i = 1; it != ite; ++i)
+		*it++ = i;
+	printSize(vct, 1);
 
 	it = vct.begin();
-	TESTED_NAMESPACE::vector<TESTED_TYPE> vct_copy(vct);
-	for (int i = 0; it != ite; ++it)
-		*it = ++i * 7;
-	vct_copy.push_back(42);
-	vct_copy.push_back(21);
+	ite = vct.begin();
 
-	std::cout << "\t-- PART ONE --" << std::endl;
-	printSize(vct);
-	printSize(vct_range);
-	printSize(vct_copy);
+	std::cout << *(++ite) << std::endl;
+	std::cout << *(ite++) << std::endl;
+	std::cout << *ite++ << std::endl;
+	std::cout << *++ite << std::endl;
 
-	vct = vct_copy;
-	vct_copy = vct_range;
-	vct_range.clear();
+	it->m();
+	ite->m();
 
-	std::cout << "\t-- PART TWO --" << std::endl;
-	printSize(vct);
-	printSize(vct_range);
-	printSize(vct_copy);
+	std::cout << *(++it) << std::endl;
+	std::cout << *(it++) << std::endl;
+	std::cout << *it++ << std::endl;
+	std::cout << *++it << std::endl;
+
+	std::cout << *(--ite) << std::endl;
+	std::cout << *(ite--) << std::endl;
+	std::cout << *--ite << std::endl;
+	std::cout << *ite-- << std::endl;
+
+	(*it).m();
+	(*ite).m();
+
+	std::cout << *(--it) << std::endl;
+	std::cout << *(it--) << std::endl;
+	std::cout << *it-- << std::endl;
+	std::cout << *--it << std::endl;
+
 	return (0);
 }
