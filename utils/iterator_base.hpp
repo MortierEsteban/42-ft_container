@@ -23,7 +23,7 @@ namespace ft
 	};
 
 	template<class Iterator>
-	struct iterator_traits
+	struct iterator_trait
 	{
 		typedef typename	Iterator::value_type			value_type;
 		typedef typename	Iterator::difference_type		difference_type;
@@ -33,7 +33,7 @@ namespace ft
 	};
 
 	template<class Iterator>
-	struct iterator_traits<Iterator *>
+	struct iterator_trait<Iterator *>
 	{
 		typedef Iterator						value_type;
 		typedef ptrdiff_t						difference_type;
@@ -43,7 +43,7 @@ namespace ft
 	};
 
 	template<class Iterator>
-	struct iterator_traits<const Iterator*>
+	struct iterator_trait<const Iterator*>
 	{
 		typedef Iterator						value_type;
 		typedef ptrdiff_t						difference_type;

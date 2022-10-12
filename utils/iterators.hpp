@@ -15,6 +15,7 @@ namespace ft
 			using typename iterator<random_access_iterator_tag, T>::pointer		;	//	pointer;
 			using typename iterator<random_access_iterator_tag, T>::reference	;	//	reference;
 			using typename iterator<random_access_iterator_tag, T>::iterator_category;//	iterator_category;
+			operator random_access_iterator<const T> () const  { return (random_access_iterator<const T>(this->_ptr)); }
 
 		private:
 		
@@ -33,7 +34,7 @@ namespace ft
 			~random_access_iterator()
 			{}
 
-			random_access_iterator(const iterator_traits<random_access_iterator<value_type> >& cpy) : _ptr(cpy._ptr)
+			random_access_iterator(const iterator_trait<random_access_iterator<value_type> >& cpy) : _ptr(cpy._ptr)
 			{}
 			random_access_iterator& operator=(const random_access_iterator cpy)
 				{	this->_ptr = cpy._ptr;	return (*this);}
@@ -63,9 +64,9 @@ namespace ft
 
 			// Iterator modification
 			random_access_iterator& operator++( void )
-			{	return(_ptr++);	}
+			{	_ptr++; return(*this);	}
 			random_access_iterator& operator--( void )
-			{	return(_ptr--);	}
+			{	_ptr--; return(*this);	}
 			random_access_iterator operator++( int )
 			{
 				random_access_iterator<value_type> tmp(_ptr);
@@ -107,7 +108,7 @@ namespace ft
 	};
 
 	// template <class InputIterator, class Distance>  
-	// void advance (iterator_traits<InputIterator>& it, Distance n)
+	// void advance (iterator_trait<InputIterator>& it, Distance n)
 	// {
 	// 	int sign = 1;
 	// 	if (n < 0 && it.iterator_category == random_access_iterator_tag)

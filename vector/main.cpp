@@ -1,38 +1,74 @@
 #include <iostream>
 #include "vector.hpp"
 #include <vector>
-
-void print(int id, const ft::vector<int>& container)
+#include <list>
+#define TESTED_NAMESPACE ft
+#define T_SIZE_TYPE size_t
+#define TESTED_TYPE int
+void print(int id, ft::vector<int>& container)
 {
     std::cout << id << ". ";
-	for(auto begin = container.begin(); begin != container.end();begin++)
+	for(ft::vector<int>::iterator begin = container.begin(); begin != container.end();begin++)
 		std::cout << *begin << ' ';
     std::cout << '\n';
 }
 
+template <typename T>
+void	printSize(TESTED_NAMESPACE::vector<T> const &vct, bool print_content = true)
+{
+	const T_SIZE_TYPE size = vct.size();
+	const T_SIZE_TYPE capacity = vct.capacity();
+	const std::string isCapacityOk = (capacity >= size) ? "OK" : "KO";
+	// Cannot limit capacity's max value because it's implementation dependent
+
+	std::cout << "size: " << size << std::endl;
+	std::cout << "capacity: " << isCapacityOk << std::endl;
+	std::cout << "max_size: " << vct.max_size() << std::endl;
+	if (print_content)
+	{
+		typename TESTED_NAMESPACE::vector<T>::const_iterator it = vct.begin();
+		typename TESTED_NAMESPACE::vector<T>::const_iterator ite = vct.end();
+		std::cout << std::endl << "Content is:" << std::endl;
+		for (; it != ite; ++it)
+			std::cout << "- " << *it << std::endl;
+	}
+	std::cout << "###############################################" << std::endl;
+}
+
+
 int main()
 {
-  	ft::vector<int> c1(3, 100);
-    print(1, c1);
- 
-    auto it = c1.begin();
-    it = c1.insert(it, 200);
-    print(2, c1);
- 
-    c1.insert(it, 2, 300);
-    print(3, c1);
- 
-    // `it` no longer valid, get a new one:
-    it = c1.begin();
- 
-    ft::vector<int> c2(2, 400);
-    c1.insert(it + 2, c2.begin(), c2.end());
-    print(4, c1);
- 
-    int arr[] = {501, 502, 503};
-	ft::vector<int> tmp (arr, arr + 3);
-    c1.insert(c1.begin(), arr, arr + 3);
-    print(5, c1);
- 
-  return 0;
+  TESTED_NAMESPACE::vector<TESTED_TYPE> vct(5);
+	TESTED_NAMESPACE::vector<TESTED_TYPE>::iterator it = vct.begin(), ite = vct.end();
+
+	std::cout << "len: " << (ite - it) << std::endl;
+	for (; it != ite; ++it)
+		*it = (ite - it);
+
+	it = vct.begin();
+	TESTED_NAMESPACE::vector<TESTED_TYPE> vct_range(it, --(--ite));
+	for (int i = 0; it != ite; ++it)
+		*it = ++i * 5;
+
+	it = vct.begin();
+	TESTED_NAMESPACE::vector<TESTED_TYPE> vct_copy(vct);
+	for (int i = 0; it != ite; ++it)
+		*it = ++i * 7;
+	vct_copy.push_back(42);
+	vct_copy.push_back(21);
+
+	std::cout << "\t-- PART ONE --" << std::endl;
+	printSize(vct);
+	printSize(vct_range);
+	printSize(vct_copy);
+
+	vct = vct_copy;
+	vct_copy = vct_range;
+	vct_range.clear();
+
+	std::cout << "\t-- PART TWO --" << std::endl;
+	printSize(vct);
+	printSize(vct_range);
+	printSize(vct_copy);
+	return (0);
 }
