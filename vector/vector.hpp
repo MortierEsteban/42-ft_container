@@ -4,11 +4,23 @@
 #include "../utils/iterator_base.hpp"
 #include "../utils/iterators.hpp"
 #include "../utils/reverse_it.hpp"
+#include "../utils/compare.hpp"
 #include "../utils/types.hpp"
 #include <memory>
 
 namespace ft
 {
+	template<class InputIt>
+	typename InputIt::difference_type distance (InputIt beg,InputIt last)
+	{
+		typename InputIt::difference_type dist = 0;
+		while(beg != last)
+		{
+			beg++;
+			dist++;
+		}
+		return (dist);
+	}
 	template<class T, class Allocator = std::allocator<T> >
 	class vector
 	{
@@ -35,7 +47,7 @@ namespace ft
 
 		public:
 			explicit	vector(const allocator_type& alloc =allocator_type()): _size(0), _capacity(0), storage(NULL), _alloc(alloc)
-			{}
+			{	reserve( 1 );	}
 		
 			explicit 	vector(typename ft::enable_if<ft::is_integral<size_type>::value, size_type>::type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):_size(0), _capacity(n), storage(NULL),_alloc(alloc)
 			{
@@ -48,7 +60,7 @@ namespace ft
 			}
 
 			template<class InputIterator>
-			vector(typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()):_size(0), _capacity(last - first), storage(NULL),_alloc(alloc)
+			vector(typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()):_size(0), _capacity(ft::distance<InputIterator>(first , last)), storage(NULL),_alloc(alloc)
 			{
 				reserve( (_capacity + 1) * 2 );
 				insert(this->begin(), first, last);
@@ -87,13 +99,13 @@ namespace ft
 			
 			//Reverse iterators
 			reverse_iterator rbegin()
-				{	return(reverse_iterator (storage + _size - 1));	}
+				{	return(reverse_iterator (storage + _size));	}
 			const_reverse_iterator rbegin() const
-				{	return(const_reverse_iterator (storage + _size - 1));	}
+				{	return(const_reverse_iterator (storage + _size));	}
 			reverse_iterator rend()
-				{	return(reverse_iterator (storage - 1));	}
+				{	return(reverse_iterator (storage));	}
 			const_reverse_iterator rend() const
-				{	return(const_reverse_iterator (storage - 1));	}
+				{	return(const_reverse_iterator (storage));	}
 
 			//Capacity
 			size_type size() const
@@ -171,9 +183,7 @@ namespace ft
 				clear();
 				if (n >= _capacity || !storage)
 					reserve(_capacity + n + 1 );
-				_size = n;
-				for(size_type i = 0; i < _size; i++)
-					_alloc.construct(&storage[n], val);
+				resize(n, val);
 			}
 			
 			template <class InputIterator> 
@@ -219,7 +229,7 @@ namespace ft
 			template <class InputIterator>    
 			iterator insert (iterator position, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last)
 			{
-				size_type dist = last - first;
+				size_type dist = ft::distance<InputIterator>( first, last );
 				size_type pos = position - begin();
 				if (_size + dist >= _capacity)
 					reserve ((_capacity + dist + 1));
@@ -253,14 +263,21 @@ namespace ft
 				{
 					storage[pos + i] = storage[tmp + i];
 				}
-				_size -= last - first;
-
+				_size -= ft::distance<iterator>(first, last);
 				return(iterator(&storage[pos]));
 			}
 
 			void swap (vector& x)
 			{
-				std::swap(storage, x.storage);
+				value_type		*tmpV = x.storage;
+                size_type   	tmpS = x._size;
+                size_type    	tmpA = x._capacity;
+                x.storage = storage;
+                x._size = _size;
+                x._capacity =_capacity;
+                storage = tmpV;
+                _size = tmpS;
+               _capacity = tmpA;
 			}
 
 			void clear()
@@ -291,33 +308,50 @@ namespace ft
 					if (_end == 0 && pos == 0)
 						storage[new_end--] = storage[_end];
 				}
+				
 	};
 
 
-	template <class T, class Alloc>  bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-		{
-			if (lhs.size() == rhs.size())
-			{
-				typename ft::vector<T>::iterator itl = lhs.begin();
-				typename ft::vector<T>::iterator itr = rhs.begin();
-				while(itl != lhs.end())
-				{
-					if (*itl != *itr)
-						return(false);
-					itr++;itl++;
-				}
-				return(true);
-			}
-			return(false);
-		}
-	template <class T, class Alloc>  bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
-		{return (!(rhs == lhs));}
-	template <class T, class Alloc>  bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	template <class T, class Alloc>  bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	template <class T, class Alloc>  bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	template <class T, class Alloc>  bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	template <class T, class Alloc>  void swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
+	template <class T, class Alloc>
+    bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+    {
+        if (lhs.size() != rhs.size())
+            return (false);
+        if (ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
+            return (true);
+        return (false);
+    }
+    template <class T, class Alloc>
+    bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+    {
+        return (!(lhs == rhs));
+    }
+    template <class T, class Alloc>
+    bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+    {
+        return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+    }
+    template <class T, class Alloc>
+    bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+    {
+        return (!(rhs < lhs));
+    }
+    template <class T, class Alloc>
+    bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+    {
+        return (rhs < lhs);
+    }
+    template <class T, class Alloc>
+    bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+    {
+        return (!(lhs < rhs));
+    }
 
+    template <class T, class Alloc>
+    void swap (vector<T,Alloc>& x, vector<T,Alloc>& y)
+    {
+        x.swap(y);
+    }
 }
 
 #endif
