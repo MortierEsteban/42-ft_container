@@ -21,7 +21,8 @@
 	
 // 	return(0);	
 // }
-#define LIMITE 5000
+#define LIMITE 1000
+
 int main(int ac, char **av)
 {
 	
@@ -39,6 +40,7 @@ int main(int ac, char **av)
         else
             bin_tree.insert(rd, tmp);
     }
+	bin_tree.balance(bin_tree.top);
     std::cout << "Root :" << bin_tree.top->value->first << std::endl << std::endl;
 	bin_tree.printTree(bin_tree.top, "Final	", true);
     // bin_tree.printTree(bin_tree.root, "", true);

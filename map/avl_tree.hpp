@@ -124,7 +124,7 @@ namespace ft
 				if (root->_balance > 1)
 				{
 					// std::cout << "R_rotate" << std::endl;
-					if (root->_left && root->getFirst() < root->_left->getFirst())
+					if (root->_left->_right && root->getFirst() > root->_left->_right->getFirst())
 					{
 						std::cout << "Need double Rotation" << std::endl;
 						L_Rotation(root->_left);
@@ -137,9 +137,8 @@ namespace ft
 				if (root->_balance < -1)
 				{
 					// std::cout << "L_rotate" << std::endl;
-					if (root->_right && root->getFirst() > root->_right->getFirst())
+					if (root->_right->_left && root->_right->_left->getFirst() < root->getFirst())
 					{
-
 						std::cout << "Need double Rotation" << std::endl;
 					 	R_Rotation(root->_right);
 					}
