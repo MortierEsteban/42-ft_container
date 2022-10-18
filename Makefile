@@ -5,7 +5,7 @@ RST			= \033[0m
 END			= \e[0m
 
 CC					=	c++
-CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98 -g3 -fsanitize=address 
+CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98  -g3 -fsanitize=address 
 NAME				=	Container
 OBJS_DIR			=	objs
 VECTOR_DIR			=	vector/
@@ -13,13 +13,14 @@ MAP_DIR				=	map/
 OBJECTS_PREFIXED	=	$(addprefix $(OBJS_DIR)/, $(OBJS))
 OBJS				=	$(SRCS:.cpp=.o)
 DEPENDENCIES		=	$(OBJECTS_PREFIXED:.o=.d)
-SRCS				=	$(VECTOR_DIR)main.cpp \
+SRCS				=	$(MAP_DIR)main.cpp \
 				
 all: $(NAME)
 
 $(OBJS_DIR):
 	@mkdir -p $(OBJS_DIR)
-	@mkdir -p $(OBJS_DIR)/vector
+	@mkdir -p $(OBJS_DIR)/$(VECTOR_DIR)
+	@mkdir -p $(OBJS_DIR)/$(MAP_DIR)
 
 $(OBJS_DIR)/%.o : %.cpp Makefile | $(OBJS_DIR)
 	@$(CC) $(CC_FLAGS) -MMD -c $< -o $@
@@ -40,7 +41,7 @@ fclean: clean
 re: fclean all
 
 test: re 
-	./$(NAME)
+	./$(NAME) > log.txt
 
 .PHONY:	all clean fclean re
 

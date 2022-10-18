@@ -5,26 +5,27 @@
 
 namespace ft
 {
-	template<class first_type, class second_type>	struct pair
+	template<class T1, class T2>	struct pair
 	{
-		typedef first_type T1;
-		typedef second_type T2;
+		typedef T1 first_type;
+		typedef T2 second_type ;
 
-		T1	first;
-		T2	second;
+		first_type	first;
+		second_type	second;
 
 		pair() : first() , second(){}
 		pair(const first_type &a, const second_type &b) : first(a), second(b) {}
-		pair(const pair<T1,T2>& pr) : first(pr.first), second(pr.second){}
-		pair	&operator=(const pair<T1,T2> &pr)
+		pair(const pair<first_type,second_type>& pr) : first(pr.first), second(pr.second){}
+		pair	&operator=(const pair<first_type,second_type> &pr)
 		{
 			this->first = pr.first;
 			this->second = pr.second;
 		}
 	};
 
-	template <class T1, class T2>  pair<T1,T2> make_pair (T1 x, T2 y)
+	template <class first_type, class second_type> 
+	pair<first_type,second_type> make_pair (first_type x, second_type y)
 	{
-		return ( ft::pair<T1, T2> ( x,y ));
+		return ( ft::pair<first_type, second_type> ( x,y ));
 	}
 }

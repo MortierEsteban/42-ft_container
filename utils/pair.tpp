@@ -1,4 +1,6 @@
+#pragma once 
 #include "pair.hpp"
+
 
 namespace ft
 {
