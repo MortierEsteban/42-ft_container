@@ -20,7 +20,7 @@
 	
 // 	return(0);	
 // }
-#define LIMITE 50
+#define LIMITE 1000
 
 int main(int ac, char **av)
 {
@@ -29,9 +29,9 @@ int main(int ac, char **av)
     (void)av;
 	std::string tmp ("Test");
     srand(time(NULL));
-	int rd;
+	int rd = 1;
     ft::avl_tree<int    , std::string> bin_tree;
-    for (size_t i = LIMITE; i > 0; --i)
+    for (size_t i = LIMITE; i > 0; i--)
     {
 		// rd = rand() % LIMITE;
         rd = i;
@@ -40,8 +40,18 @@ int main(int ac, char **av)
         else
             bin_tree.insert(rd, tmp);
     }
+
+    //  bin_tree.insert(33, "yolo");
+    //     bin_tree.insert(13, "yolo");
+    //     bin_tree.insert(53, "yolo");
+    //     bin_tree.insert(21, "yolo");
+    //     bin_tree.insert(61, "yolo");
+    //     bin_tree.insert(11, "yolo");
+    //     bin_tree.insert(8, "yolo");
+    //     bin_tree.insert(9, "yolo");
+    // bin_tree.insert(rd,tmp);
     bin_tree.checkBalance(bin_tree.top);
-	bin_tree.printTree(bin_tree.top, "Final	", true);
+	bin_tree.printTree(bin_tree.top, "Final", true);
     // bin_tree.printTree(bin_tree.root, "", true);
     // while (true)
     //     pause();

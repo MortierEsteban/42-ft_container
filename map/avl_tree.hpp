@@ -14,7 +14,7 @@ namespace ft
 		node_type*min;//????
 		node_ptr latest;
 
-		avl_tree(	void	): top( NULL ), size( 0 ), min(NULL), max(NULL)
+		avl_tree(	void	): top( NULL ), size( 0 ), min(NULL), latest(NULL)
 		{}
 		~avl_tree()
 		{
@@ -31,7 +31,7 @@ namespace ft
 			delete root;
    		 }
 		}
-		void 	insert( Key &key, Value& val)
+		void 	insert( const Key &key, const Value& val)
 		{
 			node_ptr 	pos = top;
 			bool		inf = true;
@@ -66,7 +66,7 @@ namespace ft
 					prev->_left = tmp;
 				else
 					prev->_right = tmp;
-				std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp << "\n\t\t\t pair ptraddr = " << tmp->value<< std::endl;
+				// std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp << "\n\t\t\t pair ptraddr = " << tmp->value<< std::endl;
 				min = left_most_node_from(top);
 				balance(tmp);
 			}
@@ -83,7 +83,7 @@ namespace ft
 	 		   std::cout << (last ? "├──" : "└──" );
 				if (root->_prev == NULL && root != top)
 			  	 	std::cout << root->getFirst() << " NO PREV" << std::endl;
-	  		  std::cout << "["<< root->getFirst() <<"]" << std::endl;
+	  		  std::cout << /*"["<<*/ root->getFirst() /*<<"]" */<< std::endl;
 	 	 	  printTree(root->_left, indent + (last ? "│   " : "    "), true);
 	 	 	  printTree(root->_right, indent + (last ? "│   " : "    "), false);
    		 }
@@ -100,22 +100,24 @@ namespace ft
    		 }
 		}
 
-		void	L_Rotation( node_type* unbalanced)
+		void	L_Rotation( node_type* unbalanced )
 		{
+			node_ptr	tmp = unbalanced->_right->_left;
 			update_prev( unbalanced->_prev, unbalanced , unbalanced->_right);
-			node_ptr tmp = left_most_node_from (unbalanced->_prev);
-			tmp->_left = unbalanced;
-			unbalanced->_prev = tmp;
-			unbalanced->_right = NULL;
+			if (tmp)
+				tmp->_prev = unbalanced;
+			unbalanced->_right = tmp;
+			unbalanced->_prev->_left = unbalanced;
 		}
 
-		void	R_Rotation( node_type* unbalanced)
+		void	R_Rotation( node_type* unbalanced )
 		{
+			node_ptr	tmp = unbalanced->_left->_right;
 			update_prev( unbalanced->_prev, unbalanced , unbalanced->_left);
-			node_ptr tmp = right_most_node_from (unbalanced->_prev);
-			tmp->_right = unbalanced;
-			unbalanced->_prev = tmp;
-			unbalanced->_left = NULL;
+			if (tmp)
+				tmp->_prev = unbalanced;
+			unbalanced->_left = tmp;
+			unbalanced->_prev->_right = unbalanced;
 		}
 		
 		// void	balance( void )
@@ -128,29 +130,22 @@ namespace ft
 		void choose_Rotation(node_ptr root)
 		{
 			 root->evaluate();
-			// std::cout << "Check on "<< root->getFirst() << ": balance = " << root->_balance << std::endl;
 			if (root->_balance > 1)
 			{
-				printTree(top, "Before", true);
 				// if (root->_left->_right && root->getFirst() > root->_left->_right->getFirst())
 				if (latest->getFirst() > root->_left->getFirst())
 				{
 					std::cout << "L";
 					L_Rotation(root->_left);
 				}
-				std::cout << "R_Rotation on node " << root->getFirst() << std::endl;
 				R_Rotation(root);
 			}
 			if (root->_balance < -1)
 			{
-				// printTree(top, "Before", true);
-				// if (root->_right->_left && root->_right->_left->getFirst() < root->getFirst())
 				if (latest->getFirst() > root->_right->getFirst())
 				{
-					std::cout << "R";
 					R_Rotation(root->_right);
 				}
-				std::cout << "L_Rotation on node " << root->getFirst() << std::endl;
 				L_Rotation(root);
 			}
 		}
