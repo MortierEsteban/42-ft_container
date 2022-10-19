@@ -12,7 +12,7 @@ namespace ft
 		node_ptr top;
 		size_t	size;
 		node_type*min;//????
-		node_type*max;//????
+		node_ptr latest;
 
 		avl_tree(	void	): top( NULL ), size( 0 ), min(NULL), max(NULL)
 		{}
@@ -56,16 +56,22 @@ namespace ft
 					pos = pos->_right;
 				}
 			}
-			node_ptr tmp = new node_type(key, val, prev);
-			if (!top)
-				top = tmp;
-			else if (inf == true)
-				prev->_left = tmp;
-			else
-				prev->_right = tmp;
-			std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp << std::endl;
-			// min = left_most_node_from(top);
-			balance(top);
+			try
+			{
+				node_ptr tmp = new node_type(key, val, prev);
+				latest = tmp;
+				if (!top)
+					top = tmp;
+				else if (inf == true)
+					prev->_left = tmp;
+				else
+					prev->_right = tmp;
+				std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp << "\n\t\t\t pair ptraddr = " << tmp->value<< std::endl;
+				min = left_most_node_from(top);
+				balance(tmp);
+			}
+			catch (std::bad_alloc &e)
+				{ std::cout << e.what() << std::endl;	}
 		}
 		//ROTATIONS
 
@@ -80,6 +86,17 @@ namespace ft
 	  		  std::cout << "["<< root->getFirst() <<"]" << std::endl;
 	 	 	  printTree(root->_left, indent + (last ? "│   " : "    "), true);
 	 	 	  printTree(root->_right, indent + (last ? "│   " : "    "), false);
+   		 }
+		}
+		void checkBalance(node_ptr root)
+		{
+ 	  	 if( root != NULL )
+  	 	 {
+	 		root->evaluate();
+			if (root ->_balance > 1 || root->_balance < -1)
+				std::cout << "Unbalanced node at : " << root->getFirst() << std::endl;
+			checkBalance(root->_left);
+			checkBalance(root->_right);
    		 }
 		}
 
@@ -101,53 +118,59 @@ namespace ft
 			unbalanced->_left = NULL;
 		}
 		
-		void	balance( void )
+		// void	balance( void )
+		// {
+		// 	node_type* tmp = min;
+
+		// 	set_min();set_max();
+		// }
+
+		void choose_Rotation(node_ptr root)
 		{
-			node_type* tmp = min;
-
-			set_min();set_max();
+			 root->evaluate();
+			// std::cout << "Check on "<< root->getFirst() << ": balance = " << root->_balance << std::endl;
+			if (root->_balance > 1)
+			{
+				printTree(top, "Before", true);
+				// if (root->_left->_right && root->getFirst() > root->_left->_right->getFirst())
+				if (latest->getFirst() > root->_left->getFirst())
+				{
+					std::cout << "L";
+					L_Rotation(root->_left);
+				}
+				std::cout << "R_Rotation on node " << root->getFirst() << std::endl;
+				R_Rotation(root);
+			}
+			if (root->_balance < -1)
+			{
+				// printTree(top, "Before", true);
+				// if (root->_right->_left && root->_right->_left->getFirst() < root->getFirst())
+				if (latest->getFirst() > root->_right->getFirst())
+				{
+					std::cout << "R";
+					R_Rotation(root->_right);
+				}
+				std::cout << "L_Rotation on node " << root->getFirst() << std::endl;
+				L_Rotation(root);
+			}
 		}
+		// node_ptr find_unbalanced( node_ptr ptr )
+		// {
+		// 	ptr->evaluate();
+		// 	if (ptr == NULL)
+		// 		return (NULL);
+		// 	if (ptr->_balance)
 
+		// }
+		
 		void balance(node_ptr root)
 		{
- 	  		if( root != NULL )
-  	 		{
-	 			balance(root->_right);
-	 			balance(root->_left);
-				root->evaluate();
-				// if ((root->_balance > 1 || root->_balance < -1)) 
-				// {
-				// 	std::cout << "Balancing on Node : " << root->getFirst() << std::endl;
-				// 	printTree(top, "Before", false);
-				// 	std::cout << std::endl;
-				// }
-				if (root->_balance > 1)
-				{
-					// std::cout << "R_rotate" << std::endl;
-					if (root->_left->_right && root->getFirst() > root->_left->_right->getFirst())
-					{
-						std::cout << "Need double Rotation" << std::endl;
-						L_Rotation(root->_left);
-					}
-					R_Rotation(root);
-						balance(top);
-						// printTree(top, "After", false);
-						// std::cout << "______________________________________________________________" << std::endl;
-				}
-				if (root->_balance < -1)
-				{
-					// std::cout << "L_rotate" << std::endl;
-					if (root->_right->_left && root->_right->_left->getFirst() < root->getFirst())
-					{
-						std::cout << "Need double Rotation" << std::endl;
-					 	R_Rotation(root->_right);
-					}
-					L_Rotation(root);
-						balance(top);
-					// printTree(top, "After", false);
-					// std::cout << "______________________________________________________________" << std::endl;
-				}
-   			}
+ 	  		if( root == NULL)
+				return;
+			for(node_ptr tmp = root; tmp != NULL; tmp = tmp->_prev)
+			{
+	 			choose_Rotation(tmp);
+			}
 		}
 
 		//UTILS
@@ -187,7 +210,7 @@ namespace ft
 				min = tmp;
 			}
 
-			void	update_prev( node_type* prev, node_type* rm, node_type*alter)
+			void	update_prev( node_type* prev, node_type* rm, node_type* alter)
 			{
 				if (prev == NULL)
 					top = alter;

@@ -4,8 +4,8 @@ RED			= \033[0;31m
 RST			= \033[0m
 END			= \e[0m
 
-CC					=	c++
-CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98  #-g3 -fsanitize=address 
+CC					=	g++
+CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98 -g3 -fsanitize=address 
 NAME				=	Container
 OBJS_DIR			=	objs
 VECTOR_DIR			=	vector/

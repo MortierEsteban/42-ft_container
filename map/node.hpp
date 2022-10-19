@@ -34,26 +34,19 @@ namespace ft
 
 			void	evaluate( void )
 			{
-				node *tmp = this;
-				int ldepth = 0;
-				int rdepth = 0;
-				while (tmp->_left)
-				{
-					tmp = tmp->_left;
-					ldepth++;
-				}
-				if (tmp->_right && ldepth != 0)
-					ldepth++;
-				tmp = this;
-				while (tmp->_right)
-				{
-					tmp = tmp->_right;
-					rdepth++;
-				}
-				if (tmp->_left && rdepth != 0)
-					rdepth++;
+				int ldepth = max_depth(_left);
+				int rdepth = max_depth(_right);
 				_balance = ldepth - rdepth;
 			}
+			int	max_depth(node *ptr)
+			{
+				if (ptr == NULL)
+					return (0);
+				int ldpeth = max_depth(ptr->_left);
+				int rdpeth = max_depth(ptr->_right);
+				return( ldpeth > rdpeth ? ldpeth + 1: rdpeth + 1);
+			}
+			
 			// typedef		this->getFirst()				first;??
 			// typedef		this->getSecond()				second;??
 	};
