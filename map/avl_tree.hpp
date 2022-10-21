@@ -45,45 +45,27 @@ namespace ft
 				else if (pos->getFirst() < key)
 					pos = pos->_right;
 			}
-			return( NULL );
+			return( pos );
 		}
 
 		void 	insert( const Key &key, const Value& val)
 		{
 			node_ptr 	pos = top;
-			bool		inf = true;
-			node_ptr	prev = top;
-			while(pos)
-			{
-				if (key == pos->getFirst())
-				{
-					pos->value->second = val;
-					return;
-				}
-				//COMPARE?
-				prev = pos;
-				if (key < pos->getFirst())
-				{
-					inf = true;
-					pos = pos->_left;
-				}
-				else
-				{
-					inf = false;
-					pos = pos->_right;
-				}
-			}
+			pos = rec_get_pos(top, key);
+			if (pos && pos->getFirst() == key)
+				pos->value->second = val;
+			// if (pos)
+			// 	std::cout << "key = " << key << "pos = " << pos->getFirst() << " addr = " << pos <<std::endl;
 			try
 			{
-				node_ptr tmp = new node_type(key, val, prev);
-				std::cout << tmp << " : Je leak, je suis : " << tmp->getFirst() << std::endl;
+				node_ptr tmp = new node_type(key, val, pos);
 				if (!top)
 					top = tmp;
-				else if (inf == true)
-					prev->_left = tmp;
-				else
-					prev->_right = tmp;
-				std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp <<  " pair ptraddr = " << tmp->value <<std::endl;
+				if ( pos && key > pos->getFirst())
+					pos->_right = tmp;
+				else if (pos)
+					pos->_left = tmp;
+				// std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp <<  " pair ptraddr = " << tmp->value <<std::endl;
 				min = left_most_node_from(top);
 				balance(tmp, key);
 			}
@@ -101,18 +83,14 @@ namespace ft
 
 		void	remove( const Key &key )
 		{
-			std::cout << "Searching for :" << key << std::endl;
-			node_ptr rm = get_key_ptr( key );
+			node_ptr rm = rec_get_pos (top, key );
 			if (rm == NULL)
 				return ;
-			std::cout << "Found " << rm->getFirst();
 			node_ptr stead = left_most_node_from(rm->_right);
-			std::cout << " to swap with ";
 			if (stead == NULL)
 				stead = rm->_left;
 			if (stead == NULL)
 			{
-				std::cout << "nothing " << std::endl;
 				node_ptr tmp = rm->_prev;
 				swap_prev_desc(rm, NULL);
 				rm_balance(tmp);
@@ -120,13 +98,26 @@ namespace ft
 				rm = NULL;
 				return;
 			}
-			std::cout << stead->getFirst() << " = Stead " << std::endl;
 			if (stead->_right)	
 				stead = right_most_node_from(stead);
+			if (stead->_left)
+				stead = left_most_node_from(stead);
+			if (stead == NULL)
+			{
+				node_ptr tmp = rm->_prev;
+				swap_prev_desc(rm, NULL);
+				rm_balance(tmp);
+				delete rm;
+				rm = NULL;
+				return;
+			}
 			if (rm == top)
 				top = stead;
-			node_ptr tmp = stead->_prev;
-			std::cout << stead->getFirst() <<std::endl;
+			node_ptr tmp;
+			if (stead->_prev != rm)
+				tmp = stead->_prev;
+			else
+				tmp = rm->_prev;
 			if ( rm->_left && rm->_left != stead)
 			{
 				stead->_left = rm->_left;
@@ -159,83 +150,67 @@ namespace ft
 		}
 
 		//Rotations
-		void balance(node_ptr root,const Key &key)
-		{
- 	  		if( root == NULL)
-				return;
-			for(node_ptr tmp = root; tmp != NULL; tmp = tmp->_prev)
-			{
-	 			choose_Rotation(tmp, key);
-			}
-		}
-
 		void	rm_balance(node_ptr root)
 		{
 			if (root == NULL)
 				return;
-			std::cout << "From " << root->getFirst() << " to top" << std::endl;
 			for(node_ptr tmp= root; tmp != NULL;tmp = tmp->_prev)
 			{
 				tmp->evaluate();
 				if (tmp->_balance > 1)
 				{
 					if (tmp->_left->_balance >= 0)
-					{
 						R_Rotation(tmp);
-						return ;
-					}
 					else if (tmp->_left->_balance < 0)
 					{
-						if (tmp->_left)
-							L_Rotation(tmp->_left);
+						L_Rotation(tmp->_left);
 						R_Rotation(tmp);
-						return ;
 					}
 				}
 				else if (tmp->_balance < -1)
 				{
 					if (tmp->_right->_balance <= 0)
-					{
 						L_Rotation(tmp);
-						return ;
-					}
 					else if (tmp->_right->_balance > 0)
 					{
-						if (tmp->_right)
-							R_Rotation(tmp->_right);
+						R_Rotation(tmp->_right);
 						L_Rotation(tmp);
-						return ;
 					}
 				}
 			}
-
 		}
 
-		void choose_Rotation(node_ptr root, const Key &key)
+		node_ptr	rec_get_pos(node_ptr pos,const Key &key)
 		{
-			root->evaluate();
-			if (root->_balance > 1)
+			if (!pos || (!pos->_left && !pos->_right))
+				return(pos);
+			if (key > pos->getFirst())
+				pos = rec_get_pos(pos->_right, key);
+			else if (key < pos->getFirst())
+				pos = rec_get_pos(pos->_left, key);
+			return (pos);
+
+		}
+		void balance(node_ptr root,const Key &key)
+		{
+ 	  		if( root == NULL)
+				return;
+			for(node_ptr tmp = root; tmp != NULL; tmp = tmp->_prev)
 			{
-				std::cout << "Rotation needed on " << root->getFirst();
-				if (key > root->_left->getFirst())
+				tmp->evaluate();
+				if (tmp->_balance > 1)
 				{
-					std::cout << " with L on " << root->_left->getFirst() ;
-					L_Rotation(root->_left);
+					if (key > tmp->_left->getFirst())
+						L_Rotation(tmp->_left);
+					R_Rotation(tmp);
+
 				}
-				std::cout << " and R " << std::endl;
-				R_Rotation(root);
-					
-			}
-			if (root->_balance < -1)
-			{
-				std::cout << "Rotation needed on " << root->getFirst();
-				if (key < root->_right->getFirst())//prblm
+				if (tmp->_balance < -1)
 				{
-					std::cout << " with R on"  << root->_right->getFirst();	
-					R_Rotation(root->_right);
+					if (key < tmp->_right->getFirst())//prblm
+						R_Rotation(tmp->_right);
+					L_Rotation(tmp);
 				}
-				std::cout << " and L " << std::endl;
-				L_Rotation(root);
 			}
 		}
 
@@ -246,10 +221,7 @@ namespace ft
 			if (unbalanced->_right)
 				tmp = unbalanced->_right->_left;
 			if (!unbalanced->_right)
-			{
-				std::cout << "has no sons" << std::endl;
 				return;
-			}
 			update_prev(unbalanced , unbalanced->_right);
 			if (tmp)
 				tmp->_prev = unbalanced;
@@ -264,10 +236,7 @@ namespace ft
 			if (unbalanced->_left)
 				tmp = unbalanced->_left->_right;
 			if (!unbalanced->_left)
-			{
-				std::cout << "has no sons" << std::endl;
 				return ;
-			}
 			update_prev(unbalanced , unbalanced->_left);
 			if (tmp)
 				tmp->_prev = unbalanced;
