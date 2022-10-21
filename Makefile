@@ -41,7 +41,7 @@ fclean: clean
 re: fclean all
 
 test: re 
-	./$(NAME) > log.txt
+	./$(NAME) > log.txt 
 
 .PHONY:	all clean fclean re
 

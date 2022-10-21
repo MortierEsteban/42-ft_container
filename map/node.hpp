@@ -38,6 +38,7 @@ namespace ft
 				int rdepth = max_depth(_right);
 				_balance = ldepth - rdepth;
 			}
+			
 			int	max_depth(node *ptr)
 			{
 				if (ptr == NULL)
@@ -50,5 +51,4 @@ namespace ft
 			// typedef		this->getFirst()				first;??
 			// typedef		this->getSecond()				second;??
 	};
-
 }

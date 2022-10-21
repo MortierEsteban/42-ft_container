@@ -19,8 +19,8 @@
 // 	tmp.printTree(tmp.top, "	", true);
 	
 // 	return(0);	
-// }
-#define LIMITE 1000
+// }│
+#define LIMITE 7500
 
 int main(int ac, char **av)
 {
@@ -34,24 +34,27 @@ int main(int ac, char **av)
     for (size_t i = LIMITE; i > 0; i--)
     {
 		// rd = rand() % LIMITE;
+    
         rd = i;
         if (i % 2)
             bin_tree.insert(rd, tmp);
         else
-            bin_tree.insert(rd, tmp);
+            bin_tree.insert(-rd, tmp);
     }
-
-    //  bin_tree.insert(33, "yolo");
-    //     bin_tree.insert(13, "yolo");
-    //     bin_tree.insert(53, "yolo");
-    //     bin_tree.insert(21, "yolo");
-    //     bin_tree.insert(61, "yolo");
-    //     bin_tree.insert(11, "yolo");
-    //     bin_tree.insert(8, "yolo");
-    //     bin_tree.insert(9, "yolo");
-    // bin_tree.insert(rd,tmp);
+    bin_tree.printTree(bin_tree.top, "ADDALL", true,0);
     bin_tree.checkBalance(bin_tree.top);
-	bin_tree.printTree(bin_tree.top, "Final", true);
+    
+    for( int i = LIMITE/2 ; i > (LIMITE / -2); i --)
+        {
+		    // rd = rand() % LIMITE;
+            rd = i;
+            bin_tree.remove(rd);
+            // bin_tree.printTree(bin_tree.top, tmp, true, i);
+       }
+            // bin_tree.remove(10);
+    bin_tree.checkBalance(bin_tree.top);
+	bin_tree.printTree(bin_tree.top, "RMed", true, 0);
+    // bin_tree.remove(155);
     // bin_tree.printTree(bin_tree.root, "", true);
     // while (true)
     //     pause();
