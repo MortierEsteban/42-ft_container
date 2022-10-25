@@ -15,9 +15,6 @@ namespace ft
 		typedef typename ft::iterator_trait<T>::pointer				pointer;
 		typedef typename ft::iterator_trait<T>::reference			reference;
 
-	private:
-		iterator_type		_ptr;
-
 	public: // Member functions
 
 		reverse_iterator() : _iter() {}

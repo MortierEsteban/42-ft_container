@@ -1,260 +1,219 @@
 #pragma once
 #include "node.hpp"
-#define RIGHT true
-#define LEFT false
+// #include "../utils/bidir_it.hpp"
+// #include "../utils/reverse_it.hpp"
 
 namespace ft
 {
-	template<class Key, class Value>
-	struct avl_tree
+	template<class Key,class Value, class Compare = std::less<Key> >
+	class avl_tree
 	{
-		typedef node<ft::pair<Key, Value > > node_type;
-		typedef node<ft::pair<Key, Value > >* node_ptr;
+		// typename Value::template rebind<key>::other _allocbinded;
+		private:
 
-		node_ptr top;
-		size_t	size;
-		node_type*min;//????
+			typedef Compare						key_compare;
+			key_compare							comp;
+			// typedef	reverse_iterator<iterator>					reverse_iterator;
+			// typedef	reverse_iterator<const_iterator>			const_reverse_iterator;
+			// size_t	size;
 
-		avl_tree(	void	): top( NULL ), size( 0 ), min(NULL)
-		{}
-		~avl_tree()
-		{
-			deleteall(top);
-		}
+		public:
+			typedef node<ft::pair<Key, Value > > node_type;
+			typedef node<ft::pair<Key, Value > >* node_ptr;
+			node_ptr top;
 
-		void deleteall(node_ptr root)
-		{
- 	  	 if( root != NULL )
-  	 	 {
-	 	 	deleteall(root->_right);
-	 		deleteall(root->_left);
-			//   std::cout << "deleting :" << root->getFirst() << std::endl;
-			delete root;
-   		 }
-		}
+			avl_tree( const key_compare &_comp = key_compare()): comp (_comp),top(NULL){}
+			~avl_tree()
+			{	deleteall(top);}
 
-		node_ptr get_key_ptr( const Key &key)
-		{
-			node_ptr pos = top;
-			while (pos != NULL)
+			void deleteall(node_ptr root)
 			{
-				if (pos->getFirst() == key)
-					return( pos );
-				else if (pos->getFirst() > key)
-					pos = pos->_left;
-				else if (pos->getFirst() < key)
-					pos = pos->_right;
+ 		  		if( root != NULL )
+  		 		{
+		 			deleteall(root->_right);
+		 			deleteall(root->_left);
+					delete root;
+   				}
 			}
-			return( pos );
-		}
+			
+			int max(int a, int b) { return ((a > b) ? a : b); }
 
-		void 	insert( const Key &key, const Value& val)
-		{
-			node_ptr 	pos = top;
-			pos = rec_get_pos(top, key);
-			if (pos && pos->getFirst() == key)
-				pos->value->second = val;
-			// if (pos)
-			// 	std::cout << "key = " << key << "pos = " << pos->getFirst() << " addr = " << pos <<std::endl;
-			try
-			{
-				node_ptr tmp = new node_type(key, val, pos);
-				if (!top)
-					top = tmp;
-				if ( pos && key > pos->getFirst())
-					pos->_right = tmp;
-				else if (pos)
-					pos->_left = tmp;
-				// std::cout << "Adding : <" << key << ", " << val << "> pair to tree at " << tmp <<  " pair ptraddr = " << tmp->value <<std::endl;
-				min = left_most_node_from(top);
-				balance(tmp, key);
-			}
-			catch (std::bad_alloc &e)
-				{ std::cout << e.what() << std::endl;	}
-		}
-		
-		void	swap_prev_desc( node_ptr old, node_ptr target)
-		{
-			if (old->_prev && old->_prev->_right == old)
-					old->_prev->_right = target;
-			else if (old->_prev && old->_prev->_left == old)
-					old->_prev->_left = target;
-		}
+			//INSERT REMOVE
+			void	insert(const Key& key, const Value& val)
+			{	top = insert_Node(top, key, val);}
 
-		void	remove( const Key &key )
-		{
-			node_ptr rm = rec_get_pos (top, key );
-			if (rm == NULL)
-				return ;
-			node_ptr stead = left_most_node_from(rm->_right);
-			if (stead == NULL)
-				stead = rm->_left;
-			if (stead == NULL)
+			node_ptr insert_Node( node_ptr pos,const Key &key, const Value& val)
 			{
-				node_ptr tmp = rm->_prev;
-				swap_prev_desc(rm, NULL);
-				rm_balance(tmp);
-				delete rm;
-				rm = NULL;
-				return;
+				if (!pos)
+					return(new node_type(key,val));
+				if (comp(pos->getFirst(), key))
+					pos->_right = insert_Node(pos->_right, key, val);
+				else if (comp(key, pos->getFirst()))
+					pos->_left = insert_Node(pos->_left, key, val);
+				else 
+				{
+					pos->value->second = val;
+					return (pos);
+				}
+				return(balance(pos, key));
 			}
-			if (stead->_right)	
-				stead = right_most_node_from(stead);
-			if (stead->_left)
-				stead = left_most_node_from(stead);
-			if (stead == NULL)
+			void	remove(const Key& key)
+				{	top = remove(top, key);	}
+			node_ptr remove(node_ptr pos, const Key& key)
 			{
-				node_ptr tmp = rm->_prev;
-				swap_prev_desc(rm, NULL);
-				rm_balance(tmp);
-				delete rm;
-				rm = NULL;
-				return;
+				if (!pos)
+					return(NULL);
+				if (!comp(key, pos->getFirst()))
+					pos->_right = remove(pos->_right, key);
+				else if (comp(key, pos->getFirst()))
+					pos->_left = remove(pos->_left, key);
+				else
+				{
+					if (!pos->_right && !pos->_left)
+					{
+						delete pos;
+						pos = NULL;
+						return (NULL);
+					}
+					else
+					{
+						node_ptr tmp = pos;
+						tmp = pos->_right? pos->_right:pos->_left;
+						tmp = left_most_node_from(tmp);
+						node_ptr tmp2 = unlink(pos, tmp->getFirst());
+						// printTree(top, "UNLinked ", true, tmp->getFirst());
+						pos->value->first = tmp->value->first;
+						pos->value->second = tmp->value->second;
+						delete tmp;
+						return(tmp2);
+					}
+				}
+				return(balance(pos));
 			}
-			if (rm == top)
-				top = stead;
-			node_ptr tmp;
-			if (stead->_prev != rm)
-				tmp = stead->_prev;
-			else
-				tmp = rm->_prev;
-			if ( rm->_left && rm->_left != stead)
-			{
-				stead->_left = rm->_left;
-				rm->_left->_prev = stead;
-			}
-			if (rm->_right && rm->_right != stead )
-			{
-				stead->_right = rm->_right;
-				rm->_right->_prev = stead;
-			}
-			swap_prev_desc(stead, NULL);
-			swap_prev_desc(rm,stead);
-			stead->_prev = rm->_prev;
-			rm->_right = rm->_left =rm->_prev = NULL;
-			rm_balance(tmp);
-			delete rm;
-			rm = NULL;
-		}
 
+			node_ptr	unlink(node_ptr pos, const Key &key)
+			{
+				if (pos == NULL)
+					return NULL;
+				if(comp(pos->getFirst(), key))
+					pos->_right = unlink(pos->_right,key);
+				else if (comp(key,pos->getFirst()))
+					pos->_left = unlink(pos->_left,key);
+				else
+					return(pos->_right);
+				return(balance(pos));
+			}
+
+			//BALANCE
+			node_ptr	balance(node_ptr pivot)
+			{
+				pivot->_height = 1 + max(height(pivot->_left), height(pivot->_right));
+				int balance_factor = BalanceFactor(pivot);
+				if (balance_factor > 1)
+				{
+					if (BalanceFactor(pivot->_left) >= 0)
+						return(R_Rotate(pivot));	
+					else  if (BalanceFactor(pivot->_left ) < 0 )
+					{
+						pivot->_left = L_Rotate(pivot->_left);
+						return(R_Rotate(pivot));
+					}
+				}
+				if (balance_factor < -1)
+				{
+					if (BalanceFactor(pivot->_right) <= 0)
+						return(L_Rotate(pivot));
+					else if (BalanceFactor(pivot->_right ) > 0 )
+					{
+						pivot->_right = R_Rotate(pivot->_right);
+						return(L_Rotate(pivot));
+					}
+				}
+				return (pivot);
+			}
+			
+			node_ptr	balance(node_ptr pivot, const Key &key)
+			{
+				// pivot->evaluate();
+				pivot->_height = 1 + max(height(pivot->_left), height(pivot->_right));
+				int balance_factor = BalanceFactor(pivot);
+				if (balance_factor > 1)
+				{
+					if (comp(pivot->_left->getFirst(), key))
+						pivot->_left = L_Rotate(pivot->_left);
+					return(R_Rotate(pivot));
+				}
+				if (balance_factor < -1)
+				{
+					if (comp(key , pivot->_right->getFirst()))
+						pivot->_right = R_Rotate(pivot->_right);
+					return(L_Rotate(pivot));
+				}
+				return (pivot);
+			}
+
+			//Rotations
+			node_ptr	R_Rotate( node_ptr piv)
+			{
+				node_ptr	left = piv->_left;
+				node_ptr	sub = left->_right;
+				left->_right = piv;
+				piv->_left = sub;
+				piv->_height = max(height(piv->_left), height(piv->_right)) + 1;
+				left->_height = max(height(left->_left), height(left->_right)) + 1;
+				return(left);
+			}
+			node_ptr	L_Rotate( node_ptr piv)
+			{
+				node_ptr	right = piv->_right;
+				node_ptr	sub =	right->_left;
+				right->_left = piv;
+				piv->_right = sub;
+				piv->_height = max(height(piv->_left), height(piv->_right)) + 1;
+				right->_height = max(height(right->_left), height(right->_right)) + 1;
+				return(right);
+			}
+
+			//UTILS
 		void checkBalance(node_ptr root)
 		{
- 	  	 if( root != NULL )
-  	 	 {
-	 		root->evaluate();
-			if (root ->_balance > 1 || root->_balance < -1)
-				std::cout << "Unbalanced node at : " << root->getFirst() << std::endl;
-			checkBalance(root->_left);
-			checkBalance(root->_right);
-   		 }
+ 	  		if( root != NULL )
+  	 		{
+				int tmp = BalanceFactor(root);
+				if (tmp > 1 || tmp < -1)
+					std::cout << "Unbalanced node at : " << root->getFirst() << std::endl;
+				checkBalance(root->_left);
+				checkBalance(root->_right);
+   			}
 		}
-
-		//Rotations
-		void	rm_balance(node_ptr root)
+		void printTree(node_ptr root, std::string indent, bool last, int i)
 		{
-			if (root == NULL)
-				return;
-			for(node_ptr tmp= root; tmp != NULL;tmp = tmp->_prev)
-			{
-				tmp->evaluate();
-				if (tmp->_balance > 1)
-				{
-					if (tmp->_left->_balance >= 0)
-						R_Rotation(tmp);
-					else if (tmp->_left->_balance < 0)
-					{
-						L_Rotation(tmp->_left);
-						R_Rotation(tmp);
-					}
-				}
-				else if (tmp->_balance < -1)
-				{
-					if (tmp->_right->_balance <= 0)
-						L_Rotation(tmp);
-					else if (tmp->_right->_balance > 0)
-					{
-						R_Rotation(tmp->_right);
-						L_Rotation(tmp);
-					}
-				}
-			}
+ 			if( root != NULL )
+  			{
+				std::cout<< i  << " " << indent ;
+				std::cout << (last ? "├──" : "└──" );
+				std::cout << "[ "<< root->getFirst() <<" ]" << std::endl;
+		 		printTree(root->_left, indent + (last ? "│   " : "    "), true, i);
+		 		printTree(root->_right, indent + (last ? "│   " : "    "), false, i);
+   			}
+			if (!top)
+				std::cout << "Tree is empty lol" << std::endl;
 		}
 
-		node_ptr	rec_get_pos(node_ptr pos,const Key &key)
+		int	height(node_ptr pos)
 		{
-			if (!pos || (!pos->_left && !pos->_right))
-				return(pos);
-			if (key > pos->getFirst())
-				pos = rec_get_pos(pos->_right, key);
-			else if (key < pos->getFirst())
-				pos = rec_get_pos(pos->_left, key);
-			return (pos);
-
+			if (!pos)
+				return(0);
+			return(pos->_height);
 		}
-		void balance(node_ptr root,const Key &key)
+		int BalanceFactor(node_ptr pos)
 		{
- 	  		if( root == NULL)
-				return;
-			for(node_ptr tmp = root; tmp != NULL; tmp = tmp->_prev)
-			{
-				tmp->evaluate();
-				if (tmp->_balance > 1)
-				{
-					if (key > tmp->_left->getFirst())
-						L_Rotation(tmp->_left);
-					R_Rotation(tmp);
-
-				}
-				if (tmp->_balance < -1)
-				{
-					if (key < tmp->_right->getFirst())//prblm
-						R_Rotation(tmp->_right);
-					L_Rotation(tmp);
-				}
-			}
+			if (!pos)
+				return (0);
+			return (height (pos->_left) - height (pos->_right));
 		}
 
-		void	L_Rotation( node_type* unbalanced )
-		{
-			// std::cout << "Unbalanced " << unbalanced->getFirst() << std::endl;
-			node_ptr	tmp = NULL;
-			if (unbalanced->_right)
-				tmp = unbalanced->_right->_left;
-			if (!unbalanced->_right)
-				return;
-			update_prev(unbalanced , unbalanced->_right);
-			if (tmp)
-				tmp->_prev = unbalanced;
-			unbalanced->_right = tmp;
-			unbalanced->_prev->_left = unbalanced;
-		}
-
-		void	R_Rotation( node_type* unbalanced )
-		{
-			// std::cout << "Unbalanced " << unbalanced->getFirst() << std::endl;
-			node_ptr	tmp = NULL;
-			if (unbalanced->_left)
-				tmp = unbalanced->_left->_right;
-			if (!unbalanced->_left)
-				return ;
-			update_prev(unbalanced , unbalanced->_left);
-			if (tmp)
-				tmp->_prev = unbalanced;
-			unbalanced->_left = tmp; 
-			unbalanced->_prev->_right = unbalanced;
-		}
-
-		void	update_prev(node_ptr rm, node_ptr alter)
-		{
-			if (rm->_prev == NULL)
-				top = alter;
-			swap_prev_desc(rm, alter);
-			alter->_prev = rm->_prev;
-			rm->_prev = alter;
-		}
-		//UTILS
-			//Get Deepest
-			node_type* left_most_node_from( node_type* _orig )
+			node_ptr left_most_node_from( node_type* _orig )
 			{
 				node_type* tmp = _orig;
 				if (!tmp)
@@ -263,7 +222,7 @@ namespace ft
 					tmp = tmp->_left;
 				return tmp;
 			}
-			node_type* right_most_node_from( node_type* _orig )
+			node_ptr right_most_node_from( node_type* _orig )
 			{
 				node_type* tmp = _orig;
 				if (!tmp)
@@ -272,65 +231,27 @@ namespace ft
 					tmp = tmp->_right;
 				return tmp;
 			}
-			// Set minmax
-			void	set_min( void )
-			{
-				node_type* tmp = top;
-				while ( tmp && tmp->_left)
-					tmp = tmp->_left;
-				min = tmp;
-			}
+			//ITERATORS
 
-			void	set_max( void )
+			node_ptr getNext(node_ptr orig, const Key& obj)
 			{
-				node_type* tmp = top;
-				while ( tmp && tmp->_right)
-					tmp = tmp->_right;
-				min = tmp;
-			}
-
-			void	slide_in_dms(node_ptr pos, node_ptr subtree)
-			{
-				if (!subtree || !pos)
-					return;
-				node_ptr tmp = NULL;
-				tmp = insert_pos(pos, subtree->getFirst());
-				if (tmp->getFirst() > subtree->getFirst())
+				if (!orig)
+					return (NULL);
+				if ( orig->_right && orig->getFirst() == obj)
+					return(left_most_node_from(orig->_right));
+				else if (orig == obj)
+					return( getNext(top, orig->getFirst()) );
+				if (comp(obj, orig->getFirst()))
 				{
-					tmp->_left = subtree;
-					subtree->_prev = tmp;
+					if (orig->_left && orig->_left->getFirst() == obj)
+					{
+						if (!orig->_right)
+							return(orig);
+						else
+							return(left_most_node_from(orig->_right));
+					}
 				}
-				else
-				{
-					tmp->_right = subtree;
-					subtree->_prev = tmp;
-				}
-			}
-			node_ptr insert_pos(node_ptr pos, const Key &key)
-			{
-				node_ptr tmp = pos;
-				node_ptr	fin = tmp;
-				while (tmp != NULL)
-				{
-					fin = tmp;
-					if (tmp->getFirst() > key)
-						tmp = tmp->_left;
-					else if (tmp->getFirst() < key)
-						tmp = tmp->_right;
-				}
-				return( fin );
-			}
-			
-			void printTree(node_ptr root, std::string indent, bool last, int i)
-			{
- 		  	 if( root != NULL )
-  		 	 {
-		 		   std::cout<< i  << " " << indent ;
-		 		   std::cout << (last ? "├──" : "└──" );
-		  		  std::cout << "[ "<< root->getFirst() <<" ]" << std::endl;
-		 	 	  printTree(root->_left, indent + (last ? "│   " : "    "), true, i);
-		 	 	  printTree(root->_right, indent + (last ? "│   " : "    "), false, i);
-   			 }
+				return(NULL);
 			}
 	};
 }

@@ -5,20 +5,21 @@
 
 namespace ft
 {
-	template<class T >
+	template<class T, class Alloc = std::allocator<T> >
 	struct node
 	{
-			typedef		std::allocator<T>	allocator_type;
-
-			allocator_type _alloc;
-			T				*value;
-			node			*_prev;
+			typedef		Alloc	allocator_type;
+			typedef		T		pair_type;
+			typedef		typename pair_type::first_type first_type;
+			typedef		typename pair_type::second_type second_type;
+			allocator_type 			_alloc;
+			pair_type				*value;
 			node			*_left;
 			node			*_right;
-			int				_balance;
+			int				_height;
 			
-			node (typename T::first_type _key,typename  T::second_type _mapped_value, node *prev = NULL, node *left = NULL, node *right = NULL): value(_alloc.allocate(1)), _prev(prev), _left(left),_right(right), _balance(0)
-			{	_alloc.construct(value, T(_key, _mapped_value));	}	//Creates an unrelated node with a key/mapped pair
+			node (first_type _key,second_type _mapped_value , const allocator_type &alloc = std::allocator<T>()):_alloc(alloc), value(_alloc.allocate(1)),_left(NULL),_right(NULL), _height(1)
+			{	_alloc.construct(value, pair_type(_key, _mapped_value));	}	//Creates an unrelated node with a key/mapped pair
 
 			~node()
 			{
@@ -26,29 +27,29 @@ namespace ft
 				_alloc.deallocate(value, 1);
 			}
 
-			typename T::first_type getFirst() const
+			first_type getFirst() const
 			{	return (value->first);	}
 
-			typename T::second_type getSecond() const
+			second_type getSecond() const
 			{	return (value->second);	}
 
-			void	evaluate( void )
-			{
-				int ldepth = max_depth(_left);
-				int rdepth = max_depth(_right);
-				_balance = ldepth - rdepth;
-			}
+			bool	operator<(node *Node) const
+			{	return (value->first < Node->getFirst());	}	
+			bool	operator<(const first_type& first) const
+			{	return (value->first < first);	}	
+			bool	operator>(node *Node) const
+			{	return (value->first > Node->getFirst());	}	
+			bool	operator>(const first_type& first) const
+			{	return (value->first > first);	}	
 			
-			int	max_depth(node *ptr)
-			{
-				if (ptr == NULL)
-					return (0);
-				int ldpeth = max_depth(ptr->_left);
-				int rdpeth = max_depth(ptr->_right);
-				return( ldpeth > rdpeth ? ldpeth + 1: rdpeth + 1);
-			}
-			
-			// typedef		this->getFirst()				first;??
-			// typedef		this->getSecond()				second;??
+			bool	operator<=(node *Node) const
+			{	return (value->first <= Node->getFirst());	}	
+			bool	operator<=(const first_type& first) const
+			{	return (value->first <= first);	}	
+			bool	operator>=(node *Node) const
+			{	return (value->first >= Node->getFirst());	}	
+			bool	operator>=(const first_type& first) const
+			{	return (value->first >= first);	}	
+
 	};
 }
