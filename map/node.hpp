@@ -19,8 +19,8 @@ namespace ft
 			int				_height;
 			
 			node (first_type _key,second_type _mapped_value , const allocator_type &alloc = std::allocator<T>()):_alloc(alloc), value(_alloc.allocate(1)),_left(NULL),_right(NULL), _height(1)
-			{	_alloc.construct(value, pair_type(_key, _mapped_value));	}	//Creates an unrelated node with a key/mapped pair
-
+			{	_alloc.construct(value, pair_type(_key, _mapped_value));	}
+			
 			~node()
 			{
 				_alloc.destroy(value);

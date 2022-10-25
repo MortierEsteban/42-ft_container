@@ -51,10 +51,11 @@ int main(int ac, char **av)
     for( int i = LIMITE / 2 ; i > 0; i --)
         {
 		    rd = rand() % LIMITE;
-            // rd = i;
+            rd = i;
             // bin_tree.remove(10);
 	        // bin_tree.printTree(bin_tree.top, "Before", true, rd);
             bin_tree.remove(rd);
+            // std::cout << "rmed " << rd << std::endl;
             // bin_tree.erase(rd);
             // bin_tree.remove(10);
 	// bin_tree.printTree(bin_tree.top, "After ", true, rd);

@@ -10,7 +10,6 @@ class map
 		typedef T													mapped_type;
 		typedef ft::pair<key_type, mapped_type>						value_type;
 		typedef Compare												key_compare;
-		//typedef value_compare
 		typedef Alloc     											allocator_type;
 		typedef allocator_type::reference 							reference;
 		typedef allocator_type::const_reference  					const_reference;
@@ -20,5 +19,12 @@ class map
 		typedef bidirectional_iterator<value_type>					const_iterator
 		typedef reverse_iterator;
 		typedef ft::iterator_traits<iterator>::difference_type		difference_type;
-		typedef size_t												size_type;
+		typedef size_t											size_type;
+
+		private :
+
+			avl_tree<key_type,mapped_type, key_compare> container;
+			allocator_type _alloc;
+			
+
 };

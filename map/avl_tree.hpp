@@ -13,9 +13,6 @@ namespace ft
 
 			typedef Compare						key_compare;
 			key_compare							comp;
-			// typedef	reverse_iterator<iterator>					reverse_iterator;
-			// typedef	reverse_iterator<const_iterator>			const_reverse_iterator;
-			// size_t	size;
 
 		public:
 			typedef node<ft::pair<Key, Value > > node_type;
@@ -63,7 +60,7 @@ namespace ft
 			{
 				if (!pos)
 					return(NULL);
-				if (!comp(key, pos->getFirst()))
+				if (comp(pos->getFirst(), key))
 					pos->_right = remove(pos->_right, key);
 				else if (comp(key, pos->getFirst()))
 					pos->_left = remove(pos->_left, key);
@@ -81,10 +78,14 @@ namespace ft
 						tmp = pos->_right? pos->_right:pos->_left;
 						tmp = left_most_node_from(tmp);
 						node_ptr tmp2 = unlink(pos, tmp->getFirst());
-						// printTree(top, "UNLinked ", true, tmp->getFirst());
-						pos->value->first = tmp->value->first;
-						pos->value->second = tmp->value->second;
-						delete tmp;
+						if (tmp2 != pos)
+							tmp2->_right = tmp;
+						else
+							tmp2 = tmp;
+						tmp->_height = pos->_height;
+						tmp->_left = pos->_left;
+						tmp->_right = pos->_right;
+						delete pos;
 						return(tmp2);
 					}
 				}
@@ -134,7 +135,6 @@ namespace ft
 			
 			node_ptr	balance(node_ptr pivot, const Key &key)
 			{
-				// pivot->evaluate();
 				pivot->_height = 1 + max(height(pivot->_left), height(pivot->_right));
 				int balance_factor = BalanceFactor(pivot);
 				if (balance_factor > 1)
@@ -190,7 +190,7 @@ namespace ft
 		{
  			if( root != NULL )
   			{
-				std::cout<< i  << " " << indent ;
+				std::cout<< " "<<  i  << " " << indent ;
 				std::cout << (last ? "├──" : "└──" );
 				std::cout << "[ "<< root->getFirst() <<" ]" << std::endl;
 		 		printTree(root->_left, indent + (last ? "│   " : "    "), true, i);
