@@ -8,15 +8,16 @@ namespace ft
 	template<class Key,class Value, class Compare = std::less<Key> >
 	class avl_tree
 	{
+		// friend class bidirectional_iterator<ft::pair<const Key, Value> > ;
 		// typename Value::template rebind<key>::other _allocbinded;
 		private:
-
+	
 			typedef Compare						key_compare;
 			key_compare							comp;
 
 		public:
-			typedef node<ft::pair<Key, Value > > node_type;
-			typedef node<ft::pair<Key, Value > >* node_ptr;
+			typedef node<ft::pair<const Key, Value > > node_type;
+			typedef node<ft::pair<const Key, Value > >* node_ptr;
 			node_ptr top;
 
 			avl_tree( const key_compare &_comp = key_compare()): comp (_comp),top(NULL){}
@@ -49,7 +50,7 @@ namespace ft
 					pos->_left = insert_Node(pos->_left, key, val);
 				else 
 				{
-					pos->value->second = val;
+					pos->value.second = val;
 					return (pos);
 				}
 				return(balance(pos, key));
@@ -235,23 +236,54 @@ namespace ft
 
 			node_ptr getNext(node_ptr orig, const Key& obj)
 			{
-				if (!orig)
-					return (NULL);
-				if ( orig->_right && orig->getFirst() == obj)
+				if (!orig || orig == right_most_node_from(top))
+					return(NULL);
+				if (obj == top->getFirst())
+					return(left_most_node_from(top->_right));
+				if (orig->getFirst() == obj && !orig->_right)
+					return(getNext(top, obj));
+				else if (orig->_right && orig->getFirst() == obj)
 					return(left_most_node_from(orig->_right));
-				else if (orig == obj)
-					return( getNext(top, orig->getFirst()) );
-				if (comp(obj, orig->getFirst()))
-				{
-					if (orig->_left && orig->_left->getFirst() == obj)
-					{
-						if (!orig->_right)
-							return(orig);
-						else
-							return(left_most_node_from(orig->_right));
-					}
-				}
-				return(NULL);
+				else if ( orig->_left && orig->_left->getFirst() == obj)
+					return (orig);
+				else if (orig->_right && orig->_right->getFirst() == obj)
+					return(getNext(top, orig->getFirst()));
+				else if (comp(orig->getFirst(), obj))
+						return(getNext(orig->_right, obj));
+				else if (comp(obj, orig->getFirst()))
+					return(getNext(orig->_left, obj));
+				return( NULL );
+
 			}
+				// if (orig == top)
+				// 	std::cout << "Back to top" << std::endl;
+				// if (!orig)
+				// 	return(NULL);
+				// if (orig->_right && orig->getFirst() == obj)
+				// 	return(left_most_node_from(orig->_right));
+				// if (comp(orig->getFirst(), obj))
+				// {
+				// 	if(orig->_right && orig->_right->getFirst() == obj)
+				// 		return(orig);
+				// 	else
+				// 		return(NULL);
+				// }
+				// else if (comp(obj, orig->getFirst()))
+				// {
+				// 	if ( orig->_left && orig->_left->getFirst()==obj)
+				// 	{
+				// 		if (orig->_right)
+				// 			return(left_most_node_from(orig->_right));
+				// 		else
+				// 			return(orig);
+				// 	}
+				// }
+				// else if (orig->getFirst() == obj)
+				// 	return(getNext(top, obj));
+
+			node_ptr getPrev(node_ptr orig, const Key& obj)
+			{
+			}
+			
 	};
 }
