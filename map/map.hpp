@@ -18,12 +18,12 @@ class map
 		typedef	std::allocator::pointer								pointer;
 		typedef	std::allocator::const_pointer						const_pointer;
 		typedef bidirectional_iterator<value_type>					iterator
-		typedef bidirectional_iterator<const value_type>					const_iterator
+		typedef bidirectional_iterator<const value_type>			const_iterator
 		typedef reverse_iterator<>;
 
 		private :
 
-			avl_tree<key_type,mapped_type, key_compare> container;
+			avl_tree<const key_type,mapped_type, key_compare> container;
 			allocator_type _alloc;
 
 		public:
