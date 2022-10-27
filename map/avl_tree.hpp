@@ -1,27 +1,25 @@
 #pragma once
 #include "node.hpp"
-// #include "../utils/bidir_it.hpp"
-// #include "../utils/reverse_it.hpp"
 
 namespace ft
 {
 	template<class Key,class Value, class Compare = std::less<Key> >
 	class avl_tree
 	{
-		// friend class bidirectional_iterator<ft::pair<const Key, Value> > ;
-		// typename Value::template rebind<key>::other _allocbinded;
 		private:
 
 			typedef Compare						key_compare;
 			key_compare							comp;
 
 		public:
-			typedef ft::pair<const Key, Value >					pair_type;
+
+			typedef ft::pair<const Key, Value >			pair_type;
 			typedef node<pair_type> 					node_type;
 			typedef node<pair_type>* 					node_ptr;
-			node_ptr top;
+			node_ptr	top;
+			size_t 		size;
 
-			avl_tree( const key_compare &_comp = key_compare()): comp (_comp),top(NULL){}
+			avl_tree( const key_compare &_comp = key_compare()): comp (_comp),top(NULL), size(0){}
 			~avl_tree()
 			{	deleteall(top);}
 
@@ -39,9 +37,11 @@ namespace ft
 
 			//INSERT REMOVE
 			void	insert(const Key& key, const Value& val)
-			{	top = insert_Node(top, key, val);}
+			{	top = insert_Node(top, key, val);
+				top->prev = NULL;	
+			}
 
-			void	insert(pair_type pair)
+			void	insert(const pair_type &pair)
 			{
 				top = insert_Node(top, pair.first, pair.second);
 				top->_prev = NULL;
@@ -50,7 +50,10 @@ namespace ft
 			node_ptr insert_Node( node_ptr pos,const Key &key, const Value& val)
 			{
 				if (!pos)
+				{
+					size++;
 					return(new node_type(key,val));
+				}
 				if (comp(pos->getFirst(), key))
 				{
 					pos->_right = insert_Node(pos->_right, key, val);
@@ -97,6 +100,7 @@ namespace ft
 				{
 					if (!pos->_right && !pos->_left)
 					{
+						size--;
 						delete pos;
 						pos = NULL;
 						return (NULL);
@@ -119,6 +123,7 @@ namespace ft
 						if (tmp->_right)
 							tmp->_right->_prev = tmp;
 						tmp->_prev = pos->_prev;
+						size--;
 						delete pos;
 						return(tmp2);
 					}
@@ -288,104 +293,20 @@ namespace ft
 					tmp = tmp->_right;
 				return tmp;
 			}
-			//ITERATORS
+		node_ptr	search(const Key& key)
+		{	return(search(key,top));	}
 
-
-
-			// pair_type *getNext(const Key& key)
-			// {	return(getKeyNext(top, key));	}
-
-			// pair_type *getKeyNext(node_ptr pos, const Key &key)
-			// {
-			// 	if (!pos)
-			// 		return (NULL);
-			// 	if (comp(key, pos->getFirst()))
-			// 	{
-			// 		pair_type *tmp = getKeyNext(pos->_left,key);
-			// 		if (!tmp && pos->_right)
-			// 			tmp = &left_most_node_from(pos->right);
-			// 		return(tmp);
-			// 	}
-			// 	if (comp(pos->getFirst()), key)
-			// 		return(getKeyNext(pos->_right,key));
-			// 	else 
-			// 	{
-			// 		if (pos->_right)
-			// 			return(&left_most_node_from(pos->right)->value);
-			// 		else
-			// 			return (NULL);
-			// 	}
-			// }
-
-			// pair_type *getPrev(const Key& key)
-			// {	return(getKeyNext(top, key));	}
-
-			// pair_type *getKeyPrev(node_ptr pos, const Key &key)
-			// {
-			// 	if (comp(key, pos->getFirst()))
-			// 		return(getKeyPrev(pos->_left,key));
-			// 	if (comp(pos->getFirst()), key)
-			// 	{
-			// 		pair_type *tmp = getKeyPrev(pos->_right,key);
-			// 		if (!tmp && pos->_left)
-			// 			tmp = &right_most_node_from(pos->left);
-			// 		return(tmp);
-			// 	}
-			// 	else
-			// 	{
-			// 		if (pos->_left)
-			// 			return(&right_most_node_from(pos->_left)->value);
-			// 		else
-			// 			return (NULL);
-			// 	}
-			// }
-
-
-			// node_ptr getNext(node_ptr orig, const Key& obj)
-			// {
-			// 	if (!orig || (orig == right_most_node_from(top) && !comp(obj, orig->getFirst())))
-			// 		return(NULL);
-			// 	else if (orig == right_most_node_from(top))
-			// 		return (orig);
-			// 	if (obj == top->getFirst())
-			// 		return(left_most_node_from(top->_right));
-			// 	else if (orig->_right && orig->getFirst() == obj)
-			// 		return(left_most_node_from(orig->_right));
-			// 	else if (orig->getFirst() == obj)
-			// 		return(getNext(top, obj));	
-			// 	else if (orig->_left && orig->_left->getFirst() == obj)
-			// 		return(orig);
-			// 	else if (orig->_right && orig->_right->getFirst() == obj)
-			// 		return(getNext(top, orig->getFirst())); 
-			// 	else if (comp(orig->getFirst(), obj))
-			// 		return(getNext(orig->_right, obj));
-			// 	else if (comp(obj, orig->getFirst()))
-			// 		return(getNext(orig->_left, obj));
-			// 	return( NULL );
-			// }
-
-			// node_ptr getPrev(node_ptr orig, const Key& obj)
-			// {
-			// 	if (!orig || (orig == left_most_node_from(top) && !comp(orig->getFirst(), obj)))
-			// 		return(NULL);
-			// 	else if (orig == left_most_node_from(top))
-			// 		return (orig);
-			// 	if (obj == top->getFirst())
-			// 		return(right_most_node_from(top->_left));
-			// 	if (orig->_left && orig->getFirst() == obj)
-			// 		return(right_most_node_from(orig->_left));
-			// 	else if(!orig->_left && orig->getFirst() == obj)
-			// 		return(getPrev(top, obj));
-			// 	else if (orig->_left && orig->_left->getFirst() == obj)
-			// 		return(getPrev(top, orig->getFirst()));
-			// 	else if (orig->_right && orig->_right->getFirst() == obj)
-			// 		return(orig);
-			// 	else if (comp(orig->getFirst(), obj))
-			// 		return(getPrev(orig->_right, obj));
-			// 	else if (comp(obj, orig->getFirst()))
-			// 		return(getPrev(orig->_left, obj));
-			// 	return( NULL );
-			// }
-			
+		node_ptr	search(const Key& key, node_ptr pos)
+		{
+			if (!pos)
+				return(NULL);
+			if (pos->getFirst() == key)
+				return(pos);
+			else if (comp(key,pos->getFirst()))
+				return(search(key, pos->_left));
+			else
+				return(search(key,pos->_right));
+			return NULL;
+		}
 	};
 }

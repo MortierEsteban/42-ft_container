@@ -1,7 +1,8 @@
 #include "avl_tree.hpp"
 #include <stdlib.h>
-
-#define LIMITE 25
+#include "../utils/bidir_iterator.hpp"
+#include "map.hpp"
+#define LIMITE 150
 
 int main(int ac, char **av)
 {
@@ -10,39 +11,44 @@ int main(int ac, char **av)
 	std::string tmp ("Test");
     srand(time(NULL));
 	int rd = 1;
-    ft::avl_tree<const int    , std::string> bin_tree;
-    // std::map<int    , std::string> bin_tree;
+    ft::map<int, std::string> m;
+    ft::map<int, std::string>::iterator beg;
     for (size_t i = LIMITE; i > 0; i--)
     {
-        rd = i;
-        // rd = rand() % LIMITE;
-            bin_tree.insert(rd, tmp);
-    }
-    std::cout << "Ding!" << std::endl;
-    for( int i = LIMITE / 2 ; i > 0; i --)
+        rd = rand() % LIMITE;
+        std::cout << "inserting :" << rd << std::endl;
+        if (rd % 2 )
+            std::cout << "created new :" << m.insert(ft::make_pair<const int, std::string>(rd, "BITE")).second << std::endl;
+        else 
         {
-		    rd = rand() % LIMITE;
-            // rd = i;
-    // bin_tree.printTree(bin_tree.top, "before" ,true , rd);
-            bin_tree.remove(rd);
-    // bin_tree.printTree(bin_tree.top, "After  " ,true , rd);
-    // bin_tree.checkBalance(bin_tree.top);
-       }
-    bin_tree.printTree(bin_tree.top, "Inserted " ,true , 0);
-    ft::avl_tree<const int, std::string>::node_ptr ptr = bin_tree.left_most_node_from(bin_tree.top);
-    std::cout << std::endl <<"incrementing" << std::endl;
-    while (ptr)
-    {
-        std::cout << ptr->getFirst() << " -> ";
-        ptr = ++(*ptr);
+            m[rd] = tmp;
+        std::cout << "m["<< rd << "] = \""<< m[rd] << "\"" << std::endl;
+        }
     }
-    ptr = bin_tree.right_most_node_from(bin_tree.top);
-    std::cout << std::endl <<"decrementing" << std::endl;
-    while (ptr)
-    {
-        std::cout << ptr->getFirst() << " -> ";
-        ptr = --(*ptr);
-    }
-    // bin_tree.checkBalance(bin_tree.top);
+    beg = m.begin();
+    std::cout << m.lower_bound(5000)->first << std::endl;
+
+    // std::cout << "beg = " << beg->first << std::endl;
+    // m.erase(beg++);
+    // int sizeb4 = m.size();
+    // std::cout << m.size() << std::endl;
+    // int nbrm = 0;
+    //  for (size_t i = LIMITE / 2; i > 0; i--)
+    // {
+    //     rd = rand() % LIMITE;
+    //     if (m.erase(rd))
+    //     {
+    //         nbrm++;
+    //      std::cout << "removing " << rd<< std::endl;
+    //     }
+    // }
+    
+    // std::cout << sizeb4 - nbrm << " = " <<  m.size() << std::endl;
+    // std::cout << "Ding!" << std::endl;
+    // // for( int i = LIMITE / 2 ; i > 0; i --)
+    // //     {
+	// // 	    rd = rand() % LIMITE;
+    // //         m.remove(rd);
+    // //    }
     std::cout << std::endl << " Dong!" << std::endl;
 }

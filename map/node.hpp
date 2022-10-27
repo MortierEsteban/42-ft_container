@@ -29,30 +29,6 @@ namespace ft
 			second_type getSecond() const
 			{	return (value.second);	}
 
-			// bool	operator<(node *Node) const
-			// {	return (value.first < Node->getFirst());	}	
-			// bool	operator<(const first_type& first) const
-			// {	return (value.first < first);	}	
-			// bool	operator>(node *Node) const
-			// {	return (value.first > Node->getFirst());	}	
-			// bool	operator>(const first_type& first) const
-			// {	return (value.first > first);	}	
-			
-			// bool	operator<=(node *Node) const
-			// {	return (value.first <= Node->getFirst());	}	
-			// bool	operator<=(const first_type& first) const
-			// {	return (value.first <= first);	}	
-			// bool	operator>=(node *Node) const
-			// {	return (value.first >= Node->getFirst());	}	
-			// bool	operator>=(const first_type& first) const
-			// {	return (value.first >= first);	}	
-
-			// typename Tree_type::node_ptr	operator++( void )
-			// {	return( tree->getNext(value.first));	}
-			 
-			// typename Tree_type::node_ptr	operator--( void )
-			// {	return( tree->getPrev(value.first));	}
-
 			node*operator++( void )
 			{
 				node *ret = NULL;
