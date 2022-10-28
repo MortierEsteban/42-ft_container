@@ -20,6 +20,7 @@ namespace ft
 		{
 			this->first = pr.first;
 			this->second = pr.second;
+			return(*this);
 		}
 	};
 

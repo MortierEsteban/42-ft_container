@@ -25,6 +25,7 @@ namespace ft
 
 			void deleteall(node_ptr root)
 			{
+				size = 0;
  		  		if( root != NULL )
   		 		{
 		 			deleteall(root->_right);
@@ -37,8 +38,9 @@ namespace ft
 
 			//INSERT REMOVE
 			void	insert(const Key& key, const Value& val)
-			{	top = insert_Node(top, key, val);
-				top->prev = NULL;	
+			{	
+				top = insert_Node(top, key, val);
+				top->_prev = NULL;	
 			}
 
 			void	insert(const pair_type &pair)
@@ -68,7 +70,7 @@ namespace ft
 				}
 				else 
 				{
-					pos->value.second = val;
+					// pos->value.second = val;
 					return (pos);
 				}
 				return(balance(pos, key));
@@ -77,7 +79,8 @@ namespace ft
 			void	remove(const Key& key)
 				{
 					top = remove(top, key);
-					top->_prev = NULL;
+					if (top)
+						top->_prev = NULL;
 				}
 
 			node_ptr remove(node_ptr pos, const Key& key)
@@ -275,7 +278,7 @@ namespace ft
 			return (height (pos->_left) - height (pos->_right));
 		}
 
-			node_ptr left_most_node_from( node_type* _orig )
+			node_ptr left_most_node_from( node_type* _orig ) const 
 			{
 				node_type* tmp = _orig;
 				if (!tmp)
@@ -284,7 +287,7 @@ namespace ft
 					tmp = tmp->_left;
 				return tmp;
 			}
-			node_ptr right_most_node_from( node_type* _orig )
+			node_ptr right_most_node_from( node_type* _orig ) const 
 			{
 				node_type* tmp = _orig;
 				if (!tmp)
@@ -293,10 +296,10 @@ namespace ft
 					tmp = tmp->_right;
 				return tmp;
 			}
-		node_ptr	search(const Key& key)
+		node_ptr	search(const Key& key) const
 		{	return(search(key,top));	}
 
-		node_ptr	search(const Key& key, node_ptr pos)
+		node_ptr	search(const Key& key, node_ptr pos) const
 		{
 			if (!pos)
 				return(NULL);
