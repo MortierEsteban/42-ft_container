@@ -1,6 +1,6 @@
 #pragma once 
 #include "../utils/pair.hpp"
-#include "../utils/pair.tpp"
+#include "../utils/pair.hpp"
 #include <memory>
 
 namespace ft
@@ -18,6 +18,9 @@ namespace ft
 			int				_height;
 			
 			node (first_type _key,second_type _mapped_value,node *prev = NULL): value(ft::make_pair<first_type, second_type>(_key, _mapped_value)),_left(NULL),_right(NULL) ,_prev(prev), _height(1)
+			{}
+
+			node (const pair_type &pair): value(ft::make_pair<first_type, second_type>(pair.first, pair.second)),_left(NULL),_right(NULL) ,_prev(NULL), _height(1)
 			{}
 
 			~node()
@@ -59,9 +62,9 @@ namespace ft
 
 			node*operator--( void )
 			{
-				node *ret = NULL;
+				node *ret = this;
 
-				if (_left)
+				if (ret && _left)
 				{
 					ret = _left;
 					while (ret->_right)

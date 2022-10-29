@@ -16,12 +16,23 @@ namespace ft
 			typedef ft::pair<const Key, Value >			pair_type;
 			typedef node<pair_type> 					node_type;
 			typedef node<pair_type>* 					node_ptr;
+			typedef std::allocator<node_type>			node_alloc;
 			node_ptr	top;
 			size_t 		size;
+			node_alloc	alloc;
 
-			avl_tree( const key_compare &_comp = key_compare()): comp (_comp),top(NULL), size(0){}
+			avl_tree( const key_compare &_comp = key_compare(), const node_alloc& _alloc = std::allocator<node_type>()): comp (_comp),top(NULL), size(0), alloc(_alloc){}
 			~avl_tree()
 			{	deleteall(top);}
+
+			avl_tree &operator=(const avl_tree& cpy)
+			{
+				this->top = cpy.top;
+				this->comp = cpy.comp;
+				this->alloc = cpy.alloc;
+				this->size = cpy.size;
+				return(*this);
+			}
 
 			void deleteall(node_ptr root)
 			{
@@ -30,7 +41,8 @@ namespace ft
   		 		{
 		 			deleteall(root->_right);
 		 			deleteall(root->_left);
-					delete root;
+					alloc.destroy(root);
+					alloc.deallocate(root, 1);
    				}
 			}
 			
@@ -54,7 +66,9 @@ namespace ft
 				if (!pos)
 				{
 					size++;
-					return(new node_type(key,val));
+					pos = alloc.allocate(1);
+					alloc.construct(pos, pair_type(key, val));
+					return(pos);
 				}
 				if (comp(pos->getFirst(), key))
 				{
