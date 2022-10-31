@@ -17,7 +17,7 @@ namespace ft
 			container_type	c;
 
 		public:
-			explicit stack (const container_type& cXr = container_type()):c(cXr){}
+			explicit stack (const container_type& cntr = container_type()):c(cntr){}
 			stack(const stack &cpy): c(cpy.c)
 			{}
 			stack& operator=( const stack& other )
