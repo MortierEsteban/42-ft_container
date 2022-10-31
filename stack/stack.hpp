@@ -17,8 +17,6 @@ namespace ft
 
 		public:
 			explicit stack (const container_type& cntr = container_type()):c(cntr){}
-			stack(const stack &cpy): c(cpy.c)
-			{}
 			stack& operator=( const stack& other )
 			{	c = other.c;	}
 			~stack(){}

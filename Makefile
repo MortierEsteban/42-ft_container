@@ -9,6 +9,7 @@ CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98 -g3 -fsanitize=address
 NAME				=	Container
 OBJS_DIR			=	objs
 VECTOR_DIR			=	vector/
+STACK_DIR			=	stack/
 MAP_DIR				=	map/
 OBJECTS_PREFIXED	=	$(addprefix $(OBJS_DIR)/, $(OBJS))
 OBJS				=	$(SRCS:.cpp=.o)
