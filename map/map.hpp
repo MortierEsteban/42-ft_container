@@ -69,7 +69,7 @@ namespace ft
 					{}
 
 					operator bidirectional_iterator<const P>() const  
-					{ return (bidirectional_iterator<const P>(this->_ptr)); }
+					{ return (bidirectional_iterator<const P>(this->_ptr, this->tree)); }
 
 					bidirectional_iterator& operator=( const bidirectional_iterator &cpy)
 					{	_ptr = cpy._ptr;tree = cpy.tree; return (*this);	}
@@ -122,7 +122,7 @@ namespace ft
 							_ptr = tree->right_most_node_from(tree->top);
 							return(tmp);
 						}
-						std::cout << "_ptr "<< _ptr << std::endl;
+						// std::cout << "_ptr "<< _ptr << " tree " << tree << std::endl;
 						_ptr = --(*_ptr);
 						return(tmp);
 					}
@@ -130,7 +130,7 @@ namespace ft
 			public:
 			typedef const Key											key_type;
 			typedef T													mapped_type;
-			typedef ft::pair<const key_type, T>							value_type;
+			typedef ft::pair<key_type, T>							value_type;
 			typedef size_t												size_type;
 			typedef Compare												key_compare;
 			typedef Alloc     											allocator_type;
@@ -190,15 +190,18 @@ namespace ft
 	    		iterator begin()
 				{	return( iterator(tree.left_most_node_from(tree.top), &tree));	}
 				const_iterator begin() const
-				{	return(const_iterator(tree.left_most_node_from(tree.top),&tree));	}
+				{	return(const_iterator(tree.left_most_node_from(tree.top), &tree));	}
 				iterator end()
-				{	return(iterator(NULL, &tree)); }
+				{return(iterator(NULL, &tree)); }
 				const_iterator end() const
-				{	return( const_iterator(NULL,&tree));	}
+				{return( const_iterator(NULL,&tree));	}
 				reverse_iterator rbegin()
 				{	return(reverse_iterator(end()));	}
 				const_reverse_iterator rbegin() const
-				{	return(const_reverse_iterator(end()));	}
+				{	
+					
+					return(const_reverse_iterator( const_iterator(NULL,&tree)));
+				}
 				reverse_iterator rend()
 				{	return(reverse_iterator(begin()));	}
 				const_reverse_iterator rend() const

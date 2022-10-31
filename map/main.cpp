@@ -69,11 +69,16 @@ int		main(void)
 		lst.push_back(T3(2.5 - i, (i + 1) * 7));
 
 	TESTED_NAMESPACE::map<T1, T2> mp(lst.begin(), lst.end());
+	std::cout << "Normal reverse" << std::endl;
 	TESTED_NAMESPACE::map<T1, T2>::reverse_iterator it(mp.rbegin());
-	TESTED_NAMESPACE::map<T1, T2>::const_reverse_iterator ite(mp.rbegin());
+	// TESTED_NAMESPACE::map <T1, T2>::const_reverse_iterator tmp(mp.rbegin());
+	// std::cout << tmp->first << std::endl;
+	std::cout << "Const reverse" << std::endl;
+	TESTED_NAMESPACE::map<T1, T2>::const_reverse_iterator ite( mp.rbegin());
+	std::cout << "const rend : " << ite->first<< std::endl;
+ 
 	printSize(mp);
-	std::cout << it->first << " " << mp.rbegin()->first << std::endl;
-
+	std::cout << "PRBLM" << std::endl;
 	printPair(++ite);
 	printPair(ite++);
 	printPair(ite++);

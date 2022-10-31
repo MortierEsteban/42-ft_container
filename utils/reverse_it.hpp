@@ -23,9 +23,8 @@ namespace ft
 		reverse_iterator(iterator_type it) : _iter(it) {}
 
 		template <class Iterator>
-		reverse_iterator(const reverse_iterator<Iterator>& rev_it) 
-		{_iter = rev_it.base();}
-
+		reverse_iterator(const reverse_iterator<Iterator>& rev_it) :_iter(rev_it.base())
+		{}
 
 		~reverse_iterator() {}
 
@@ -54,6 +53,7 @@ namespace ft
 		reference			operator[](difference_type n) {reverse_iterator copy(*this); copy._iter -= n; return *(--copy._iter);}
 
 	private:
+
 		iterator_type		_iter;
 	};
 
