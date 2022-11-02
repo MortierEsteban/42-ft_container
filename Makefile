@@ -66,7 +66,7 @@ clean:
 	@printf "\033[2K\r${GRN}[CLEAN]${RST} done$(END)"
 
 fclean: clean
-	@rm -f $(NAME)
+	@rm -f $(NAME_MAP) $(NAME_VECTOR) $(NAME_MAP)
 	@printf "\033[2K\r${GRN}[FCLEAN]${RST} done$(END)"
 
 re: fclean all
