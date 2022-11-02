@@ -1,5 +1,5 @@
 #pragma once
-
+//#include <type_traits>
 namespace ft
 {
 	template <class T, T v>
@@ -20,12 +20,12 @@ namespace ft
 	template<>
 	struct is_integral<bool> : public integral_constant<char, true>
 	{};
-	template<>
-	struct is_integral<char16_t> : public integral_constant<char16_t, true>
-	{};
-	template<>
-	struct is_integral<char32_t> : public integral_constant<char32_t, true>
-	{};
+	// template<>
+	// struct is_integral<char16_t> : public integral_constant<char16_t, true>
+	// {};
+	// template<>
+	// struct is_integral<char32_t> : public integral_constant<char32_t, true>
+	// {};
 	template<>
 	struct is_integral<wchar_t> : public integral_constant<wchar_t, true>
 	{};

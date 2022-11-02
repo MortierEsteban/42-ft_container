@@ -3,4 +3,9 @@ objs
 Container
 *.txt
 .vscode
+<<<<<<< HEAD
 *test*
+=======
+containers_test
+ft_containers-unit-test
+>>>>>>> 64c2939891e6dbb90f5e7b4267c6f1fae043aa9e

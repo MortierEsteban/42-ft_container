@@ -1,9 +1,8 @@
-#ifndef RD_ACCESS
-# define RD_ACCESS
+#pragma once
+# include <cstddef>
 
 namespace ft
 {
-	# include <cstddef>
 
 	struct input_iterator_tag { };
 	struct output_iterator_tag { };
@@ -23,7 +22,7 @@ namespace ft
 	};
 
 	template<class Iterator>
-	struct iterator_traits
+	struct iterator_trait 
 	{
 		typedef typename	Iterator::value_type			value_type;
 		typedef typename	Iterator::difference_type		difference_type;
@@ -33,7 +32,7 @@ namespace ft
 	};
 
 	template<class Iterator>
-	struct iterator_traits<Iterator *>
+	struct iterator_trait<Iterator *>
 	{
 		typedef Iterator						value_type;
 		typedef ptrdiff_t						difference_type;
@@ -43,7 +42,7 @@ namespace ft
 	};
 
 	template<class Iterator>
-	struct iterator_traits<const Iterator*>
+	struct iterator_trait<const Iterator*>
 	{
 		typedef Iterator						value_type;
 		typedef ptrdiff_t						difference_type;
@@ -52,5 +51,3 @@ namespace ft
 		typedef random_access_iterator_tag		iterator_category;
 	};
 }
-
-#endif
