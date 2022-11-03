@@ -8,6 +8,7 @@ CC					=	g++
 CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98 #-g3 -fsanitize=address 
 NAME				=	Container
 OBJS_DIR			=	objs
+TRACE_DIR			=	trace
 
 VECTOR_DIR				=	vector/
 NAME_VECTOR				= 	vector-test
@@ -33,11 +34,25 @@ SRCS_MAP				=	$(MAP_DIR)main_map.cpp \
 
 all: $(NAME)
 
+
 $(OBJS_DIR):
 	@mkdir -p $(OBJS_DIR)
 	@mkdir -p $(OBJS_DIR)/$(MAP_DIR)
 	@mkdir -p $(OBJS_DIR)/$(VECTOR_DIR)
 	@mkdir -p $(OBJS_DIR)/$(STACK_DIR)
+
+$(TRACE_DIR):
+	@mkdir -p $(TRACE_DIR)
+	@mkdir -p $(TRACE_DIR)/$(MAP_DIR)
+	@mkdir -p $(TRACE_DIR)/$(MAP_DIR)/ft
+	@mkdir -p $(TRACE_DIR)/$(MAP_DIR)/std
+	@mkdir -p $(TRACE_DIR)/$(VECTOR_DIR)
+	@mkdir -p $(TRACE_DIR)/$(VECTOR_DIR)/ft
+	@mkdir -p $(TRACE_DIR)/$(VECTOR_DIR)/std
+	@mkdir -p $(TRACE_DIR)/$(STACK_DIR)
+	@mkdir -p $(TRACE_DIR)/$(STACK_DIR)/ft
+	@mkdir -p $(TRACE_DIR)/$(STACK_DIR)/std
+
 
 $(OBJS_DIR)/%.o : %.cpp Makefile | $(OBJS_DIR)
 	@$(CC) $(CC_FLAGS) -MMD -c $< -o $@
@@ -49,20 +64,20 @@ $(NAME) : map vector stack
 tester:
 	gcl https://github.com/mli42/containers_test.git
 
-map: $(OBJECTS_PREFIXED_MAP)
+map: $(OBJECTS_PREFIXED_MAP) $(TRACE_DIR)
 	@$(CC) -o $(NAME_MAP) $(OBJECTS_PREFIXED_MAP) $(CC_FLAGS)
 	@printf "\033[2K\r\033[0;32m[END]\033[0m "MAP" $(END)\n"
 	
-vector: $(OBJECTS_PREFIXED_VECTOR)
+vector: $(OBJECTS_PREFIXED_VECTOR) $(TRACE_DIR)
 	@$(CC) -o $(NAME_VECTOR) $(OBJECTS_PREFIXED_VECTOR) $(CC_FLAGS)
 	@printf "\033[2K\r\033[0;32m[END]\033[0m "VECTOR" $(END)\n"
 
-stack: $(OBJECTS_PREFIXED_STACK)
+stack: $(OBJECTS_PREFIXED_STACK) $(TRACE_DIR)
 	@$(CC) -o $(NAME_STACK) $(OBJECTS_PREFIXED_STACK) $(CC_FLAGS)
 	@printf "\033[2K\r\033[0;32m[END]\033[0m "MAP" $(END)\n"
 
 clean:
-	@rm -rf $(OBJS_DIR)
+	@rm -rf $(OBJS_DIR) $(TRACE_DIR)
 	@printf "\033[2K\r${GRN}[CLEAN]${RST} done$(END)"
 
 fclean: clean

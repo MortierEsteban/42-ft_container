@@ -267,7 +267,7 @@ namespace ft
 				{
 					while (first != last)
 					{
-						tree.insert(first->first, first->second);
+						insert(*first);
 						first++;
 					}
 				}
