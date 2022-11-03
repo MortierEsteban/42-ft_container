@@ -13,7 +13,6 @@ void	test_insert(MAP& _m, std::vector< int > rands, std::string outpt)
 			_m.insert(PAIR_TYPE(*beg, "PAIR INSERT"));
 		beg++;
 	}
-	std::cout <<"REACHED HINT?"  << std::endl;
 	_m.insert(tmp.begin(),tmp.end());
 	typename MAP::iterator hint(_m.begin());
 	hint = _m.begin();

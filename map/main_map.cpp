@@ -4,7 +4,7 @@
 #include <ctime>
 #include <cstdlib>
 
-bool compare( FT_ITER ft_beg,FT_ITER ft_end, STD_ITER std_beg, STD_ITER std_end)
+bool compare( FT_ITER ft_beg,FT_ITER ft_end, STD_ITER std_beg, STD_ITER std_end, std::string test)
 {
 	while (ft_beg != ft_end && std_beg != std_end)
 	{
@@ -25,6 +25,7 @@ bool compare( FT_ITER ft_beg,FT_ITER ft_end, STD_ITER std_beg, STD_ITER std_end)
 		std::cout << "ERROR: STD_MAP didn't reach end!" << std::endl;
 		return (false);
 	}
+	std::cout << test << " : No diff in Content " << std::endl;
 	return (true);
 }
 
@@ -33,7 +34,7 @@ bool	compare (const A& ft_, const B& std_, std::string test)
 {
 	if (ft_ == std_)
 	{
-		std::cout << test << " was Success FUll" << std::endl; 
+		std::cout << test << " was Successfull" << std::endl; 
 		return true;
 	}
 	return false;
@@ -84,8 +85,8 @@ int main ()
 	std_stamp = getms();
 	std_stamp = std_stamp - start;
 	time_eval(ft_stamp, std_stamp, val);
-	// if (!compare(m_ft.begin(),m_ft.end(), m_std.begin(), m_std.end()))
-	// 	exit (1);
-	// return(0);
+	if (!compare(m_ft.begin(),m_ft.end(), m_std.begin(), m_std.end(), "Insert"))
+		exit (1);
+	return(0);
 
 }
