@@ -1,3 +1,5 @@
+
+
 template<class MAP, class PAIR_TYPE>
 void	test_insert(MAP& _m, std::vector< int > rands, std::string outpt)
 {

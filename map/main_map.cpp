@@ -68,7 +68,7 @@ int main ()
 	std::time_t 			ft_stamp;(void ) ft_stamp;
 	std::time_t 			std_stamp;(void) std_stamp;
 
-	FT_MAP 	m_ft;
+	FT_MAP 		m_ft;
 	STD_MAP 	m_std;
 
 	srand(0);
