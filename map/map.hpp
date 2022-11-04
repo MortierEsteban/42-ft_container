@@ -164,9 +164,7 @@ namespace ft
 
 				template <class InputIterator>
 				map (InputIterator first, InputIterator last,       const key_compare& _comp = key_compare(),       const allocator_type& _alloc = allocator_type()):  comp(_comp), alloc(_alloc),v_comp(comp), tree(comp)
-				{
-					insert(first, last);
-				}
+				{	insert(first, last);}
 
 				map (const map& x): comp(x.comp), alloc(x.alloc),v_comp(x.v_comp), tree(x.comp)
 				{
@@ -198,10 +196,7 @@ namespace ft
 				reverse_iterator rbegin()
 				{	return(reverse_iterator(end()));	}
 				const_reverse_iterator rbegin() const
-				{	
-					
-					return(const_reverse_iterator( const_iterator(NULL,&tree)));
-				}
+				{	return(const_reverse_iterator( const_iterator(NULL,&tree)));}
 				reverse_iterator rend()
 				{	return(reverse_iterator(begin()));	}
 				const_reverse_iterator rend() const
@@ -233,6 +228,7 @@ namespace ft
 	    		mapped_type& at (const key_type& k)
 				{
 					node_ptr pos = tree.search(k);
+					tree.printTree(tree.top, "", false, 0);
 					if (!pos)
 						throw(std::out_of_range("map::_M_range_check"));
 					return(pos->value.second);
@@ -263,7 +259,7 @@ namespace ft
 				}
 
 				template <class InputIterator> 
-					void insert (InputIterator first, InputIterator last)
+				void insert (InputIterator first, InputIterator last)
 				{
 					while (first != last)
 					{
@@ -273,19 +269,16 @@ namespace ft
 				}
 
 				void erase (iterator position)
-				{
-					tree.remove((*position).first);
-				}
+				{	tree.remove((*position).first);	}
 				
 				size_type erase (const key_type& k)
 				{
-					size_type tmp = 0;
 					if(tree.search(k))
 					{
-						tmp = 1;
 						tree.remove(k);
+						return (1);
 					}
-					return(tmp);
+					return(0);
 				}
 	    		void erase (iterator first, iterator last)
 				{

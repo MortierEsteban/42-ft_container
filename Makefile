@@ -5,7 +5,7 @@ RST			= \033[0m
 END			= \e[0m
 
 CC					=	g++
-CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98 #-g3 -fsanitize=address 
+CC_FLAGS			=	-Wall -Werror -Wextra -std=c++98# -g3 -fsanitize=address 
 NAME				=	Container
 OBJS_DIR			=	objs
 TRACE_DIR			=	trace
@@ -27,6 +27,7 @@ SRCS_STACK				=	$(STACK_DIR)main_stack.cpp \
 MAP_DIR					=	map/
 NAME_MAP				= 	map-test
 OBJECTS_PREFIXED_MAP	=	$(addprefix $(OBJS_DIR)/, $(OBJS_MAP))
+OBJECTS_PREFIXED_MAP_STD=	$(addprefix $(OBJECTS_PREFIXED_MAP), -std.o)
 OBJS_MAP				=	$(SRCS_MAP:.cpp=.o)
 DEPENDENCIES_MAP		=	$(OBJECTS_PREFIXED_MAP:.o=.d)
 SRCS_MAP				=	$(MAP_DIR)main_map.cpp \
@@ -55,7 +56,8 @@ $(TRACE_DIR):
 
 
 $(OBJS_DIR)/%.o : %.cpp Makefile | $(OBJS_DIR)
-	@$(CC) $(CC_FLAGS) -MMD -c $< -o $@
+	@$(CC) $(CC_FLAGS) -DNAMESPACE=ft  -MMD -c $< -o $@
+	@$(CC) $(CC_FLAGS) -MMD -c $< -o $@-std.o
 	@printf    "\033[2K\r${BLU}[BUILD]${RST} '$<' $(END)"
 
 $(NAME) : map vector stack
@@ -65,8 +67,13 @@ tester:
 	gcl https://github.com/mli42/containers_test.git
 
 map: $(OBJECTS_PREFIXED_MAP) $(TRACE_DIR)
-	@$(CC) -o $(NAME_MAP) $(OBJECTS_PREFIXED_MAP) $(CC_FLAGS)
-	@printf "\033[2K\r\033[0;32m[END]\033[0m "MAP" $(END)\n"
+	@$(CC) -o $(NAME_MAP)-std $(OBJECTS_PREFIXED_MAP_STD) $(CC_FLAGS)
+	@printf "\033[2K\r\033[0;32m[END]\033[0m "MAP-STD" $(END)\n"
+	@$(CC) -o $(NAME_MAP)-ft  $(OBJECTS_PREFIXED_MAP) $(CC_FLAGS)
+	@printf "\033[2K\r\033[0;32m[END]\033[0m "MAP-FT" $(END)\n"
+	@./$(NAME_MAP)-ft
+	@./$(NAME_MAP)-std
+	@printf "\033[2K\r\033[0;32m[Created logs]\033[0m "MAP" $(END)\n"
 	
 vector: $(OBJECTS_PREFIXED_VECTOR) $(TRACE_DIR)
 	@$(CC) -o $(NAME_VECTOR) $(OBJECTS_PREFIXED_VECTOR) $(CC_FLAGS)
@@ -81,7 +88,7 @@ clean:
 	@printf "\033[2K\r${GRN}[CLEAN]${RST} done$(END)"
 
 fclean: clean
-	@rm -f $(NAME_MAP) $(NAME_VECTOR) $(NAME_MAP)
+	@rm -f $(NAME_MAP)-ft $(NAME_MAP)-std $(NAME_VECTOR) $(NAME_MAP)
 	@printf "\033[2K\r${GRN}[FCLEAN]${RST} done$(END)"
 
 re: fclean all

@@ -5,14 +5,25 @@
 #include <fstream>
 #include <sys/time.h>
 
-#define LIMITE 120000
+
+#define LIMITE 200
+#define RAND_SEED	444
 #define TRACE_DIR	"trace/map/"
-#define FT_MAP		ft::map<int,std::string >
-#define STD_MAP 	std::map<int,std::string >
-#define FT_ITER 	ft::map<int,std::string >::iterator
-#define STD_ITER 	std::map<int,std::string >::iterator
-#define FT_CITER 	ft::map<int,std::string >::const_iterator
-#define STD_CITER 	std::map<int,std::string >::const_iterator
+#define KEY_TYPE	int
+#ifndef NAMESPACE
+# define NAMESPACE std
+# define NAME_NS	"std" 
+#endif
+
+#ifndef NAME_NS
+# define NAME_NS "ft"
+#endif
+
+#define	MAP_TYPE	NAMESPACE::map<KEY_TYPE,std::string >
+#define	MAP_ITER	MAP_TYPE::iterator
+#define PAIR_TYPE	NAMESPACE::pair<const KEY_TYPE, std::string >
 
 #include "utils.cpp"
 #include "insert.cpp"
+#include "construct.cpp"
+#include "delete.cpp"

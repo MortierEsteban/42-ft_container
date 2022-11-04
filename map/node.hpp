@@ -51,7 +51,7 @@ namespace ft
 						if (ret->_prev && ret->_prev->_left == ret)
 						{
 							ret = ret->_prev;
-							break;
+							return(ret);
 						}
 						ret = ret->_prev;
 					}
@@ -79,7 +79,7 @@ namespace ft
 						if (ret->_prev && ret->_prev->_right == ret)
 						{
 							ret = ret->_prev;
-							break;
+							return (ret);
 						}
 						ret = ret->_prev;
 					}
