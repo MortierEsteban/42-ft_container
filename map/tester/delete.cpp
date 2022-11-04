@@ -9,19 +9,18 @@ void erases(std::vector<int> rands, std::ofstream &out)
 	m.insert(tmp.begin(), tmp.end());
 	out << "BEFORE DELETION" << std::endl;
 	printSize(m, out, 1);
-	// m.erase(++m.begin());
-	// m.erase(rands[LIMITE / 2]);
+	m.erase(++m.begin());
+	m.erase(rands[LIMITE / 2]);
 	for (int i = LIMITE / 4 ; i< LIMITE / 2 ; i++)
 	{
 		// if (i % 3)
 			out << "Erasing[" << rands[i] << "] = " << m.erase(rands[i])<< std::endl;
 	}
-		m.at(682927509);//ce ptr disparait, prev perdu?
-	// MAP_ITER beg = m.begin();
-	// for(int i = 0; i < LIMITE / 6;i++ )
-	// 	beg++;
-	// m.erase(m.begin(), beg);
-	// out << "After every deletion" << std::endl;
+	MAP_ITER beg = m.begin();
+	for(int i = 0; i < LIMITE / 6;i++ )
+		beg++;
+	m.erase(m.begin(), beg);
+	out << "After every deletion" << std::endl;
 	printSize(m, out, 1);
 
 }

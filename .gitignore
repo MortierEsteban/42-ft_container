@@ -9,3 +9,6 @@ vector-test
 stack-test
 containers_test
 ft_containers-unit-test
+map-test-*
+vector-test-*
+stack-test-*

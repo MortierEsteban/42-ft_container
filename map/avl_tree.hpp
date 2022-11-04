@@ -150,14 +150,14 @@ namespace ft
 				if(comp(pos->getFirst(), key))
 				{
 					pos->_right = unlink(pos->_right,key);
-					// if (pos->_right)
-					// 	pos->_right->_prev = pos;
+					if (pos->_right)
+						pos->_right->_prev = pos;
 				}
 				else if (comp(key,pos->getFirst()))
 				{
 					pos->_left = unlink(pos->_left,key);
-					// if (pos->_left)
-					// 	pos->_left->_left = pos;
+					if (pos->_left)
+						pos->_left->_prev = pos;
 				}
 				else
 					return(pos->_right);

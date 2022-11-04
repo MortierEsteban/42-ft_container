@@ -6,7 +6,7 @@
 #include <sys/time.h>
 
 
-#define LIMITE 200
+#define LIMITE 1200000
 #define RAND_SEED	444
 #define TRACE_DIR	"trace/map/"
 #define KEY_TYPE	int

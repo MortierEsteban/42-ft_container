@@ -19,13 +19,12 @@ int main ()
 {
 	std::vector< KEY_TYPE >			rand_store;
 	srand(RAND_SEED);
+	std::cout << NAME_NS ;
 	for (int i = 0 ; i < LIMITE ; i++)
 	{	rand_store.push_back(rand());	}
 	// Constructors(rand_store);
 	// Insert(rand_store);
 	Deletion(rand_store); 
-	
-
 }
 
 // void	template(std::vector< int > &rand_store)
