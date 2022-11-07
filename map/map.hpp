@@ -49,6 +49,7 @@ namespace ft
 				typedef typename tree_type::node_type	node_type;
 				typedef node_type*	node_ptr;
 
+					value_type			end;
 					node_ptr	_ptr;
 					const tree_type	*tree;
 
@@ -80,15 +81,32 @@ namespace ft
 					{	return(_ptr != b._ptr);	}
 
 					reference operator*() 
-					{	return(_ptr->value);	}
+					{
+						if (!_ptr)
+							return(end);	
+						return(_ptr->value);	
+					}
 
 					reference operator*()const 
-					{	return(_ptr->value);	}
+					{
+						if (!_ptr)
+							return(end);	
+						return(_ptr->value);	
+					}
 
 					pointer operator->() 
-					{	return(&(_ptr->value));	}
+					{
+						if (!_ptr)
+							return(&end);	
+						return(&(_ptr->value));	
+					}
+
 					pointer operator->() const
-					{	return(&(_ptr->value));	}
+					{
+						// if (!_ptr)
+						// 	return(&end);	
+						return(&(_ptr->value));
+					}
 
 					bidirectional_iterator &operator++(void)
 					{	

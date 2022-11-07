@@ -47,7 +47,7 @@ namespace ft
 
 		public:
 			explicit	vector(const allocator_type& alloc =allocator_type()): _size(0), _capacity(0), storage(NULL), _alloc(alloc)
-			{	reserve( 1 );	}
+			{	reserve( 1 );}
 		
 			explicit 	vector(typename ft::enable_if<ft::is_integral<size_type>::value, size_type>::type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):_size(0), _capacity(n), storage(NULL),_alloc(alloc)
 			{
@@ -62,7 +62,9 @@ namespace ft
 			template<class InputIterator>
 			vector(typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type first, InputIterator last, const allocator_type& alloc = allocator_type()):_size(0), _capacity(ft::distance<InputIterator>(first , last)), storage(NULL),_alloc(alloc)
 			{
-				reserve( (_capacity + 1) * 2 );
+				if (_capacity == 0)
+					_capacity++;
+				reserve( (_capacity) * 2 );
 				insert(this->begin(), first, last);
 			}
 
@@ -126,8 +128,10 @@ namespace ft
 			bool empty() const
 				{	return(_size == 0);	}
 			void reserve (size_type new_cap)
-			{	
-				if (new_cap > _capacity) 
+			{
+				if(_capacity == 1 && new_cap > 2)	
+					new_cap--;
+				if (new_cap > _capacity)
 				{
 					alloc_check(new_cap);
 					value_type *new_stor = _alloc.allocate(new_cap);
@@ -147,7 +151,6 @@ namespace ft
 					_capacity = new_cap;
 				}
 			}
-
 			//Element access
 			reference operator[] (size_type n)
 			{	return(storage[n]);	}
@@ -182,7 +185,7 @@ namespace ft
 			{
 				clear();
 				if (n >= _capacity || !storage)
-					reserve(_capacity + n + 1 );
+					reserve(_capacity + n );
 				resize(n, val);
 			}
 			
@@ -196,7 +199,7 @@ namespace ft
 			void push_back (const value_type& val)
 			{
 				if (_size + 1 >= _capacity)
-					reserve ((_capacity + 1)  * 2);
+					reserve ((_capacity)  * 2);
 				_alloc.construct(storage + _size, val);
 				_size++;
 			}
@@ -215,7 +218,7 @@ namespace ft
 			{
 				size_type tmp = position - begin();
 				if (_size + n >= _capacity)
-					reserve ((_capacity + n + 1));
+					reserve ((_capacity + n));
 				shift_right( tmp ,n);
 				size_type stop = tmp + n;
 				for(; tmp != stop; tmp++)
@@ -232,7 +235,7 @@ namespace ft
 				size_type dist = ft::distance<InputIterator>( first, last );
 				size_type pos = position - begin();
 				if (_size + dist >= _capacity)
-					reserve ((_capacity + dist + 1));
+					reserve ((_capacity + dist));
 				size_type last_pos = pos + dist;
 				shift_right(pos, dist);
 				while(pos != last_pos)
