@@ -7,5 +7,7 @@ int main()
 	map_test();
 	std::cout << "VECTOR: testing" << std::endl;
 	vector_test();
+	std::cout << "STACK: testing" << std::endl;
+	stack_test();
 	return(0);
 }

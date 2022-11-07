@@ -12,3 +12,4 @@ printf "\nDIFF FOR Utilities\n">> trace/map/diff.log;
 diff trace/map/ft/utilities_log.txt trace/map/std/utilities_log.txt >> trace/map/diff.log;
 printf "\nDIFF FOR Operators\n">> trace/map/diff.log;
 diff trace/map/ft/relation_log.txt trace/map/std/relation_log.txt >> trace/map/diff.log;
+exit 0
