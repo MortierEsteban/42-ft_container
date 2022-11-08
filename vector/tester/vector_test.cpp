@@ -226,7 +226,7 @@ void v_utilities_tests(std::vector<KEY_TYPE> &rands, std::ofstream &out)
 	out << "BEFORE SWAP" << std::endl << "m : " << std::endl;
 
 	v_printSize(m,out,1);
-	for(VECTOR_TYPE::size_type i; i < m.size();i++)
+	for(VECTOR_TYPE::size_type i = 0; i < m.size();i++)
 		out << "m[" << i << "] = " << m[i] <<" = " << m.at(i) << std::endl;
 	out << "mp : " << std::endl;
 	v_printSize(mp,out,1);
@@ -255,6 +255,10 @@ void v_utilities_tests(std::vector<KEY_TYPE> &rands, std::ofstream &out)
 	out << *(++m_beg) << std::endl;
 	out << (mp_beg == m.begin()) << std::endl;
 	out << *(++mp_beg) << std::endl;
+	NAMESPACE::vector< char > tmp;
+	for(char c = 'a'; c < 'z'; c++)
+		tmp.push_back(c);
+	out << "Capacity: " << tmp.capacity() << " data = " << tmp.data() << std::endl;
 }
 
 void	v_test_insert(std::vector< KEY_TYPE > rands, std::ofstream &out)

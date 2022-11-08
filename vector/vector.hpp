@@ -137,13 +137,13 @@ namespace ft
 					value_type *new_stor = _alloc.allocate(new_cap);
 					if (_size)
 					{
-						size_type tmp = _size;
-						while (tmp > 0)
+						size_type tmp = 0;
+						while (tmp < _size)
 						{
-							new_stor[tmp] = storage[tmp];
-							tmp--;
+							_alloc.construct(new_stor + tmp, storage[tmp]);
+							_alloc.destroy(storage + tmp);
+							tmp++;
 						}
-						new_stor[tmp] = storage[tmp];
 					}
 					if (storage)
 						_alloc.deallocate(storage, _capacity);
@@ -252,22 +252,21 @@ namespace ft
 				return (erase(position, position + 1));
 			}
 
-			iterator erase (iterator first, iterator last)
+			iterator erase(iterator first, iterator last)
 			{
-				if (first == end())
+				size_type start = first - begin();
+				size_type end = last - begin();
+				size_type diff = end - start;
+
+				_size -= diff;
+				if (!diff)
 					return (first);
-				for(int i = 0; first + i != last; i++)
+				for (size_type i = start; i < _size; i++)
 				{
-					_alloc.destroy(&(*(first + i)));
+					_alloc.destroy(&storage[i + diff]);
+					_alloc.construct(&storage[i], storage[i + diff]);
 				}
-				size_type tmp = last - begin();
-				size_type pos = first - begin();
-				for (int i = 0; tmp + i <= _size; i++)
-				{
-					storage[pos + i] = storage[tmp + i];
-				}
-				_size -= ft::distance<iterator>(first, last);
-				return(iterator(&storage[pos]));
+				return (storage + start);
 			}
 
 			void swap (vector& x)
