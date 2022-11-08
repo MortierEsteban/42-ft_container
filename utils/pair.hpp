@@ -14,7 +14,8 @@ namespace ft
 
 		pair() : first() , second(){}
 		pair(const first_type &a, const second_type &b) : first(a), second(b) {}
-		pair(const pair<first_type,second_type>& pr) : first(pr.first), second(pr.second){}
+		template<class U, class V>
+		pair(const pair<U, V>& pr) : first(pr.first), second(pr.second){}
 		pair	&operator=(const pair<first_type,second_type> &pr)
 		{
 			this->first = pr.first;

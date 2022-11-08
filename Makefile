@@ -4,7 +4,7 @@ RED							=	\033[0;31m
 RST							=	\033[0m
 END							=	\e[0m
 
-CC							=	g++
+CC							=	c++
 CC_FLAGS					=	-Wall -Werror -Wextra -std=c++98
 
 NAME						=	Container

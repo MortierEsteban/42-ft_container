@@ -250,9 +250,9 @@ void utilities_tests(std::vector<KEY_TYPE> &rands, std::ofstream &out)
 	MAP_TYPE m;
 	MAP_TYPE mp;
 	NAMESPACE::map<KEY_TYPE,std::string, std::greater<KEY_TYPE> > other_way;
-	out << "comp less :" << m.key_comp()(1,2) << " comp greater: "<< m.key_comp()(1,2) << std::endl;
+	out << "comp less :" << m.key_comp()(1,2) << " comp greater: "<< other_way.key_comp()(1,2) << std::endl;
 	
-	out << "comp less :" << m.value_comp()(*pr.begin(),*pr.end()) << " comp greater: "<< m.value_comp()(*pr.begin(),*pr.end()) << std::endl;
+	out << " Value comp less :" << m.value_comp()(*pr.begin(),*(++pr.begin())) << " Value comp greater: "<< other_way.value_comp()(*pr.begin(),*(++pr.begin())) << std::endl;
 	out << "SWAP" << std::endl;
 	for(std::vector<PAIR_TYPE>::iterator beg = pr.begin(); beg != pr.end(); beg++)
 		m.insert(*beg);
